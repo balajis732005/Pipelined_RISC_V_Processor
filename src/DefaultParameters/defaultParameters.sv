@@ -1,27 +1,31 @@
 module defaultParameters();
 
     typedef enum logic [6:0] {
-        RType       = 7'b0110011,
-        IType       = 7'b0010011,
-        ITypeLoad   = 7'b0000011,
-        ITypeJALR   = 7'b1100111,
-        SType       = 7'b0100011,
-        BType       = 7'b1100011,
-        UType       = 7'b0110111,
-        UTypeAUIPC  = 7'b0010111,
-        JType       = 7'b1101111
+        RType = 7'b0110011,
+        IType = 7'b0010011,
+        ITypeLoad = 7'b0000011,
+        ITypeJALR = 7'b1100111,
+        SType = 7'b0100011,
+        BType = 7'b1100011,
+        UType = 7'b0110111,
+        UTypeAUIPC = 7'b0010111,
+        JType = 7'b1101111
     } instructionType;
 
-    typedef enum logic [1:0] {
-        LoadStoreType = 2'b00,
-        BTypeALU      = 2'b01,
-        RTypeALU      = 2'b10,
-        ITypeALU      = 2'b11
+    typedef enum logic [2:0] {
+        LoadStoreType = 3'b000,
+        BTypeALU = 3'b001,
+        RTypeALU = 3'b010,
+        ITypeALU = 3'b011,
+        JType = 3'b100,
+        ITypeJALR = 3'b101,
+        UType = 3'b110,
+        UTypeAUIPC = 3'b111
     } typeOfInstructionAluControl;
 
     typedef enum logic [3:0] {
-        ADD     = 4'b0000,
-        SUB     = 4'b0001,
+        ADD = 4'b0000,
+        SUB = 4'b0001,
         AND = 4'b0010,
         OR  = 4'b0011,
         XOR = 4'b0100,

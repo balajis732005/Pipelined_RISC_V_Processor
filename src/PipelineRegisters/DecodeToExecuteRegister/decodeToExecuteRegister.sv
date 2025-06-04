@@ -1,22 +1,24 @@
 module decodeToExecuteRegister (
-    input  logic clock,
-    input  logic reset,
-    input  logic [31:0] pc,
-    input  logic [31:0] readData1,
-    input  logic [31:0] readData2,
-    input  logic [31:0] immediateValue,
-    input  logic [4:0] rs1,
-    input  logic [4:0] rs2,
-    input  logic [4:0] rd,
-    input  logic [2:0] func3,
-    input  logic [6:0] func7,
-    input  logic branchEnable,
-    input  logic memoryReadEnable,
-    input  logic memoryWriteEnable,
-    input  logic registerWriteEnable,
-    input  logic immediateEnable,
-    input  logic [1:0] aluOperation,
-    input  logic memoryOrAlu,
+    input logic clock,
+    input logic reset,
+    input logic [31:0] pc,
+    input logic [31:0] readData1,
+    input logic [31:0] readData2,
+    input logic [31:0] immediateValue,
+    input logic [4:0] rs1,
+    input logic [4:0] rs2,
+    input logic [4:0] rd,
+    input logic [2:0] func3,
+    input logic [6:0] func7,
+    input logic branchEnable,
+    input logic memoryReadEnable,
+    input logic memoryWriteEnable,
+    input logic registerWriteEnable,
+    input logic [1:0] aluSrc1,
+    input logic [1:0] aluSrc2,
+    input logic [2:0] aluOperation,
+    input logic pcAdderSrc,
+    input logic writeBackFromMemoryOrAlu
     output logic [31:0] pcOut,
     output logic [31:0] readData1Out,
     output logic [31:0] readData2Out,
@@ -30,9 +32,11 @@ module decodeToExecuteRegister (
     output logic memoryReadEnableOut,
     output logic memoryWriteEnableOut,
     output logic registerWriteEnableOut,
-    output logic immediateEnableOut,
-    output logic [1:0] aluOperationOut,
-    output logic memoryOrAluOut
+    output logic [1:0] aluSrc1Out,
+    output logic [1:0] aluSrc2Out,
+    output logic [2:0] aluOperationOut,
+    output logic pcAdderSrcOut,
+    output logic writeBackFromMemoryOrAluOut
 );
 
     always_ff @(posedge clock) begin
@@ -50,9 +54,11 @@ module decodeToExecuteRegister (
             memoryReadEnableOut <= 1'b0;
             memoryWriteEnableOut <= 1'b0;
             registerWriteEnableOut <= 1'b0;
-            immediateEnableOut <= 1'b0;
+            aluSrc1Out <= 1'b0;
+            aluSrc2Out <= 1'b0;
             aluOperationOut <= 2'b0;
-            memoryOrAluOut <= 1'b0;
+            pcAdderSrcOut <= 1'b0;
+            writeBackFromMemoryOrAluOut <= 1'b0;
         end else begin
             pcOut <= pc;
             readData1Out <= readData1;
@@ -67,9 +73,11 @@ module decodeToExecuteRegister (
             memoryReadEnableOut <= memoryReadEnable;
             memoryWriteEnableOut <= memoryWriteEnable;
             registerWriteEnableOut <= registerWriteEnable;
-            immediateEnableOut <= immediateEnable;
+            aluSrc1Out <= aluSrc1;
+            aluSrc2Out <= aluSrc2;
             aluOperationOut <= aluOperation;
-            memoryOrAluOut <= memoryOrAlu;
+            pcAdderSrcOut <= pcAdderSrc;
+            writeBackFromMemoryOrAluOut <= writeBackFromMemoryOrAlu;
         end
     end
 

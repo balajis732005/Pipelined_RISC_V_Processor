@@ -1,7 +1,7 @@
 `include "../../DefaultParameters/defaultParameters.sv";
 
 module aluControl(
-    input logic [1:0] aluControl,
+    input logic [2:0] aluControl,
     input logic [2:0] func3,
     input logic [6:0] func7,
     output logic [3:0] aluControlOut
@@ -12,6 +12,22 @@ module aluControl(
         case(aluControl)
             typeOfInstructionAluControl.LoadStoreType: begin
                 aluControlOut = 4'b0000; // ADD - LOAD/STORE
+            end
+
+            typeOfInstructionAluControl.JType: begin
+                aluControlOut = 4'b0000; // ADD - JAL
+            end
+
+            typeOfInstructionAluControl.ITypeJALR: begin
+                aluControlOut = 4'b0000; // ADD - JALR
+            end
+
+            typeOfInstructionAluControl.UType: begin
+                aluControlOut = 4'b0000; // ADD - LUI
+            end
+
+            typeOfInstructionAluControl.UTypeAUIPC: begin
+                aluControlOut = 4'b0000; // ADD - AUPIC
             end
 
             typeOfInstructionAluControl.BTypeALU: begin
