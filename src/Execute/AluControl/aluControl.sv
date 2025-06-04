@@ -32,12 +32,12 @@ module aluControl(
 
             typeOfInstructionAluControl.BTypeALU: begin
                 case(func3)
-                    3'b000 : aluControlOut = 1010;
-                    3'b001 : aluControlOut = 1011;
-                    3'b100 : aluControlOut = 1100;
-                    3'b101 : aluControlOut = 1101;
-                    3'b110 : aluControlOut = 1110;
-                    3'b111 : aluControlOut = 1111;
+                    3'b000 : aluControlOut = 1010; // BEQ
+                    3'b001 : aluControlOut = 1011; // BNE
+                    3'b100 : aluControlOut = 1100; // BLT
+                    3'b101 : aluControlOut = 1101; // BGE
+                    3'b110 : aluControlOut = 1110; // BLTU
+                    3'b111 : aluControlOut = 1111; // BGEU
                     default : aluControlOut = 4'bx;
                 endcase
             end

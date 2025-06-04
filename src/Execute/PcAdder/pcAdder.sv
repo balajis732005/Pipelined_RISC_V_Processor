@@ -4,6 +4,6 @@ module pcAdder(
     output logic [31:0] newPc
 );
 
-    assign newPc = pc + newPc;
+    assign newPc = pc + (imm << 1);
 
 endmodule
