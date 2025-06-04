@@ -1,140 +1,120 @@
 `include "../../DefaultParameters/defaultParameters.sv"
 
 module controlUnit(
-    input  logic [6:0] opcode,
-    output logic pcUpdate,
-    output logic memoryReadEnable,
-    output logic memoryWriteEnable,
-    output logic registerWriteEnable,
-    output logic [1:0] aluSrc1,
-    output logic [1:0] aluSrc2,
-    output logic [2:0] aluOperation,
-    output logic pcAdderSrc,
-    output logic writeBackFromAluOrMemory
+    input  logic [6:0] opcode,                  // OPCODE
+    output logic       pcUpdate,                // REQUIRE TO UPDATE OR NOT
+    output logic       memoryReadEnable,        // REQUIRE TO READ IN MEMORY OR NOT
+    output logic       memoryWriteEnable,       // REQUIRE TO WRITE IN MEMORY OR NOT
+    output logic       registerWriteEnable,     // REQUIRE TO WRITE IN REGISTER OR NOT
+    output logic [1:0] aluSrc1,                 // INPUT1 SOURCE FOR ALU 
+    output logic [1:0] aluSrc2,                 // INPUT2 SOURCE FOR ALU
+    output logic [2:0] aluOperation,            // INSTRUCTION OPERATION TO PERFORM IN ALU
+    output logic       pcAdderSrc,              // INPUT SOUREC FOR PC UPDATE ADDER
+    output logic       writeBackFromAluOrMemory // WRITE BACK DATA FROM ALU=0 OR MEMORY=1
 );
 
+    /*
+    ALUSRC1 -> 00 => REGISTER | 01 => PC | 10 => CONSTANT - 0
+    ALUSRC2 -> 00 => REGISTER | 01 => IMMEDIATE | 10 => CONSTANT - 1
+    ALUOPERATION => Ref defaultParameters.sv
+    */
+
     always_comb begin
-    
+        
+        // DEFAULT
+        pcUpdate               = 1'b0;
+        memoryReadEnable       = 1'b0;
+        memoryWriteEnable      = 1'b0;
+        registerWriteEnable    = 1'b0;
+        aluSrc1                = 2'b00;
+        aluSrc2                = 2'b00;
+        aluOperation           = 3'b000;
+        pcAdderSrc             = 1'b0;
+        writeBackFromAluOrMemory = 1'b0;
+
+        // INSTRUCTION
         case(opcode)
+
+            // R-TYPE
             instructionType.RType: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b00; // REGISTER
-                aluSrc2 = 2'b00; // REGISTER
-                aluOperation = 3'b010;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'b0; // ALU
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b00;
+                aluSrc2                = 2'b00;
+                aluOperation           = 3'b010;
             end
 
+            // I-TYPE
             instructionType.IType: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b00; // REGISTER
-                aluSrc2 = 2'b01; // IMMEDIATE
-                aluOperation = 3'b011;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'b0; // ALU
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b00;
+                aluSrc2                = 2'b01;
+                aluOperation           = 3'b011;
             end
 
+            // I-TYPE_LOAD
             instructionType.ITypeLoad: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b1;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b00; // REGISTER
-                aluSrc2 = 2'b01; // IMMEDIATE
-                aluOperation = 3'b000;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'b1; // MEMORY
+                memoryReadEnable       = 1'b1;
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b00;
+                aluSrc2                = 2'b01;
+                aluOperation           = 3'b000;
+                writeBackFromAluOrMemory = 1'b1;
             end
 
-            instructionType.ITypeJALR: begin
-                pcUpdate = 1'b1;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b01; // PC
-                aluSrc2 = 2'b10; // CONSTANT - 1
-                aluOperation = 3'b101;
-                pcAdderSrc = 1'b1; // REGISTER
-                writeBackFromAluOrMemory = 1'b0; // ALU
-            end
-
+            // S-TYPE
             instructionType.SType: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b1;
-                registerWriteEnable = 1'b0;
-                aluSrc1 = 2'b00; // REGISTER
-                aluSrc2 = 2'b01; // IMMEDIATE
-                aluOperation = 3'b000;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'bx;
+                memoryWriteEnable      = 1'b1;
+                aluSrc1                = 2'b00;
+                aluSrc2                = 2'b01;
+                aluOperation           = 3'b000;
             end
 
+            // B-TYPE
             instructionType.BType: begin
-                pcUpdate = 1'b1;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b0;
-                aluSrc1 = 2'b00; // REGISTER
-                aluSrc2 = 2'b00; // REGISTER
-                aluOperation = 3'b001;
-                pcAdderSrc = 1'b0; // PC
-                writeBackFromAluOrMemory = 1'bx;
+                pcUpdate               = 1'b1;
+                aluSrc1                = 2'b00;
+                aluSrc2                = 2'b00;
+                aluOperation           = 3'b001;
+                pcAdderSrc             = 1'b0;
             end
 
-            instructionType.UType: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b10; // CONSTANT - 0
-                aluSrc2 = 2'b01; // IMMEDIATE
-                aluOperation = 3'b110;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'b0; // ALU
-            end
-
-            instructionType.UTypeAUIPC: begin
-                pcUpdate = 1'b0;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b01; // PC
-                aluSrc2 = 2'b01; // IMMEDIATE
-                aluOperation = 3'b111;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'b0; // ALU
-            end
-
+            // J-TYPE
             instructionType.JType: begin
-                pcUpdate = 1'b1;
-                memoryReadEnable = 1'b0;
-                memoryWriteEnable = 1'b0;
-                registerWriteEnable = 1'b1;
-                aluSrc1 = 2'b01; // PC
-                aluSrc2 = 2'b10; // CONSTANT - 1
-                aluOperation = 3'b100;
-                pcAdderSrc = 1'b0; // PC
-                writeBackFromAluOrMemory = 1'b0; // ALU
+                pcUpdate               = 1'b1;
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b01;
+                aluSrc2                = 2'b10;
+                aluOperation           = 3'b100;
+                pcAdderSrc             = 1'b0;
             end
 
-            default: begin
-                pcUpdate = 1'bx;
-                memoryReadEnable = 1'bx;
-                memoryWriteEnable = 1'bx;
-                registerWriteEnable = 1'bx;
-                aluSrc1 = 2'bx;
-                aluSrc2 = 2'bx;
-                aluOperation = 3'bx;
-                pcAdderSrc = 1'bx;
-                writeBackFromAluOrMemory = 1'bx;
+            // I-TYPE_JALR
+            instructionType.ITypeJALR: begin
+                pcUpdate               = 1'b1;
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b01;
+                aluSrc2                = 2'b10;
+                aluOperation           = 3'b101;
+                pcAdderSrc             = 1'b1;
             end
+
+
+            // U-TYPE
+            instructionType.UType: begin
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b10;
+                aluSrc2                = 2'b01;
+                aluOperation           = 3'b110;
+            end
+
+            // U-TYPE_AUPIC
+            instructionType.UTypeAUIPC: begin
+                registerWriteEnable    = 1'b1;
+                aluSrc1                = 2'b01;
+                aluSrc2                = 2'b01;
+                aluOperation           = 3'b111;
+            end
+
         endcase
     end
 
