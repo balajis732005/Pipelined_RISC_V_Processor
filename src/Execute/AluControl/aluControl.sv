@@ -1,36 +1,43 @@
 `include "../../DefaultParameters/defaultParameters.sv";
 
 module aluControl(
-    input logic [2:0] aluControl,
-    input logic [2:0] func3,
-    input logic [6:0] func7,
-    output logic [3:0] aluControlOut
+    input logic [2:0] aluControl,    // ALUCONTROL
+    input logic [2:0] func3,         // FUNC3 OPERATION
+    input logic [6:0] func7,         // FUNC7 OPERATION
+    output logic [3:0] aluControlOut // ALU TO WORK OPEARTION
 );
 
     always_comb begin
 
         case(aluControl)
+
+            // LOAD - STORE [I-TYPE AND S-TYPE]
             typeOfInstructionAluControl.LoadStoreType: begin
                 aluControlOut = 4'b0000; // ADD - LOAD/STORE
             end
 
+            // J-TYPE
             typeOfInstructionAluControl.JType: begin
                 aluControlOut = 4'b0000; // ADD - JAL
             end
 
+            // I-TYPE_JALR
             typeOfInstructionAluControl.ITypeJALR: begin
                 aluControlOut = 4'b0000; // ADD - JALR
             end
 
+            // U-TYPE
             typeOfInstructionAluControl.UType: begin
                 aluControlOut = 4'b0000; // ADD - LUI
             end
 
+            // U-TYPE_AUIPC
             typeOfInstructionAluControl.UTypeAUIPC: begin
                 aluControlOut = 4'b0000; // ADD - AUPIC
             end
 
-            typeOfInstructionAluControl.BTypeALU: begin
+            // B-TYPE
+            typeOfInstructionAluControl.BType: begin
                 case(func3)
                     3'b000 : aluControlOut = 1010; // BEQ
                     3'b001 : aluControlOut = 1011; // BNE
@@ -42,7 +49,8 @@ module aluControl(
                 endcase
             end
 
-            typeOfInstructionAluControl.RTypeALU: begin
+            // R-TYPE
+            typeOfInstructionAluControl.RType: begin
                 case(func3)
                     3'b000: aluControlOut = (func7 == 7'b0100000) ? 4'b0001 : 4'b0000; // SUB/ADD
                     3'b111: aluControlOut = 4'b0010; // AND
@@ -56,7 +64,8 @@ module aluControl(
                 endcase
             end
 
-            typeOfInstructionAluControl.ITypeALU: begin
+            // I-TYPE
+            typeOfInstructionAluControl.IType: begin
                 case(func3)
                     3'b000: aluControlOut = 4'b0000; // ADDI
                     3'b111: aluControlOut = 4'b0010; // ANDI
@@ -71,7 +80,7 @@ module aluControl(
             end
 
             default: begin
-                aluControlOut = 4'bx;
+                aluControlOut = 4'bxxxx;
             end
         endcase
     end
