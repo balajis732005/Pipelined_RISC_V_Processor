@@ -9,6 +9,7 @@ module executeToMemory(
     input logic memoryWriteEnable,
     input logic writeBackFromMemoryOrAlu,
     input logic [31:0] rs2,
+    input logic [2:0] func3,
     output logic [31:0] pcAdderOut,
     output logic [31:0] aluOut,
     output logic branchOut,
@@ -17,6 +18,7 @@ module executeToMemory(
     output logic memoryWriteEnableOut,
     output logic writeBackFromMemoryOrAluOut,
     output logic [31:0] rs2Out,
+    output logic [2:0] func3Out
 );
 
     always_ff @(posedge clock) begin
@@ -30,6 +32,7 @@ module executeToMemory(
             memoryWriteEnableOut <= 1'b0;
             writeBackFromMemoryOrAlu <= 1'b0;
             rs2Out <= 32'b0;
+            func3 <= 3'b0;
         end
         else begin
             pcAdderOut <= pcAdder;
@@ -40,6 +43,7 @@ module executeToMemory(
             memoryWriteEnableOut <= memoryWriteEnable;
             writeBackFromMemoryOrAlu <= writeBackFromMemoryOrAluOut;
             rs2Out <= rs2;
+            func3Out <= func3;
         end
     end
 
