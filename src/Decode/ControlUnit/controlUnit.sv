@@ -59,7 +59,7 @@ module controlUnit(
                 memoryWriteEnable   = 1'b0;
                 registerWriteEnable = 1'b1;
                 immediateEnable     = 1'b1;
-                aluOperation        = 2'b00; // DON'T CARE
+                aluOperation        = 2'bx;
                 memoryOrAlu         = 1'b0;
             end
 
@@ -70,7 +70,7 @@ module controlUnit(
                 registerWriteEnable = 1'b0;
                 immediateEnable     = 1'b1;
                 aluOperation        = 2'b00;
-                memoryOrAlu         = 1'b0; // DON'T CARE
+                memoryOrAlu         = 1'bx;
             end
 
             instructionType.BType: begin
@@ -80,7 +80,7 @@ module controlUnit(
                 registerWriteEnable = 1'b0;
                 immediateEnable     = 1'b0;
                 aluOperation        = 2'b01;
-                memoryOrAlu         = 1'b0; // DON'T CARE
+                memoryOrAlu         = 1'bx;
             end
 
             instructionType.UType: begin
@@ -89,7 +89,7 @@ module controlUnit(
                 memoryWriteEnable   = 1'b0;
                 registerWriteEnable = 1'b1;
                 immediateEnable     = 1'b1;
-                aluOperation        = 2'b00; // DON'T CARE
+                aluOperation        = 2'bx;
                 memoryOrAlu         = 1'b0;
             end
 
@@ -99,7 +99,7 @@ module controlUnit(
                 memoryWriteEnable   = 1'b0;
                 registerWriteEnable = 1'b1;
                 immediateEnable     = 1'b1;
-                aluOperation        = 2'b00; // DON'T CARE
+                aluOperation        = 2'bx;
                 memoryOrAlu         = 1'b1;
             end
 
@@ -109,7 +109,7 @@ module controlUnit(
                 memoryWriteEnable   = 1'b0;
                 registerWriteEnable = 1'b1;
                 immediateEnable     = 1'b1;
-                aluOperation        = 2'b00; // DON'T CARE
+                aluOperation        = 2'bx;
                 memoryOrAlu         = 1'b0;
             end
 

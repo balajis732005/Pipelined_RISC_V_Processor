@@ -16,10 +16,11 @@ module alu(
             aluOperations.LOGIAND : aluOutput = in1 & in2;
             aluOperations.LOGIOR : aluOutput = in1 | in2;
             aluOperations.LOGIXOR : aluOutput = in1 ^ in2;
-            aluOperations.SLL_OP : aluOutput = in2 << in1[4:0];
-            aluOperations.SRL_OP : aluOutput = in2 >> in1[4:0];
-            aluOperations.SRA_OP : aluOutput = $signed(in2) >>> in1[4:0];
-            aluOperations.SLT_OP : aluOutput = ($signed(in1) < $signed(in2)) ? 32'b1 : 32'b0;
+            aluOperations.SLL : aluOutput = in1 << in2[4:0];
+            aluOperations.SRL : aluOutput = in1 >> in2[4:0];
+            aluOperations.SRA : aluOutput = $signed(in1) >>> in2[4:0];
+            aluOperations.SLT : aluOutput = ($signed(in1) < $signed(in2)) ? 32'b1 : 32'b0;
+            aluOperations.SLTU : aluOutput = in1 < in2 ? 32'b1 : 32'b0;
             default : aluOutput = 32'b0;
         endcase
     end

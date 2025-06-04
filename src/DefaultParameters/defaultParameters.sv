@@ -25,10 +25,11 @@ module defaultParameters();
         LOGIAND = 4'b0000,
         LOGIOR  = 4'b0001,
         LOGIXOR = 4'b1000,
-        SLL_OP  = 4'b1001,
-        SRL_OP  = 4'b1010,
-        SRA_OP  = 4'b1011,
-        SLT_OP  = 4'b0111
+        SLL = 4'b1001,
+        SRL = 4'b1010,
+        SRA = 4'b1011,
+        SLT = 4'b0111,
+        SLTU = 4'b1000
     } aluOperations;
 
 endmodule
