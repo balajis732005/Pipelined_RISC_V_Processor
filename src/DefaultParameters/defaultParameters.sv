@@ -14,9 +14,9 @@ module defaultParameters();
 
     typedef enum logic [2:0] {
         LoadStoreType = 3'b000,
-        BTypeALU = 3'b001,
-        RTypeALU = 3'b010,
-        ITypeALU = 3'b011,
+        BType = 3'b001,
+        RType = 3'b010,
+        IType = 3'b011,
         JType = 3'b100,
         ITypeJALR = 3'b101,
         UType = 3'b110,
