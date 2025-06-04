@@ -5,6 +5,6 @@ module instructionMemory (
 
     logic [31:0] instMem [0:1023];
 
-    assign instruction = instMem[instructionAddress[11:2]];
+    assign instruction = instMem[instructionAddress[9:0]];
 
 endmodule
