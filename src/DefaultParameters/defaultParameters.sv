@@ -1,5 +1,6 @@
 module defaultParameters();
 
+    // OPCODE OF INSTRUCTIONS
     typedef enum logic [6:0] {
         RType = 7'b0110011,
         IType = 7'b0010011,
@@ -12,6 +13,7 @@ module defaultParameters();
         JType = 7'b1101111
     } instructionType;
 
+    // ALU CODE FOR INSTRUCTIONS
     typedef enum logic [2:0] {
         LoadStoreType = 3'b000,
         BType = 3'b001,
@@ -23,6 +25,7 @@ module defaultParameters();
         UTypeAUIPC = 3'b111
     } typeOfInstructionAluControl;
 
+    // ALU CODE FOR OPERATION
     typedef enum logic [3:0] {
         ADD = 4'b0000,
         SUB = 4'b0001,
