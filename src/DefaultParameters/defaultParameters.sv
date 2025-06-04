@@ -20,16 +20,22 @@ module defaultParameters();
     } typeOfInstructionAluControl;
 
     typedef enum logic [3:0] {
-        ADD     = 4'b0010,
-        SUB     = 4'b0110,
-        LOGIAND = 4'b0000,
-        LOGIOR  = 4'b0001,
-        LOGIXOR = 4'b1000,
-        SLL = 4'b1001,
-        SRL = 4'b1010,
-        SRA = 4'b1011,
-        SLT = 4'b0111,
-        SLTU = 4'b1000
+        ADD     = 4'b0000,
+        SUB     = 4'b0001,
+        AND = 4'b0010,
+        OR  = 4'b0011,
+        XOR = 4'b0100,
+        SLL = 4'b0101,
+        SRL = 4'b0110,
+        SRA = 4'b0111,
+        SLT = 4'b1000,
+        SLTU = 4'b1001,
+        BEQ = 4'b1010,
+        BNE = 4'b1011,
+        BLT = 4'b1100,
+        BGE = 4'b1101,
+        BLTU = 4'b1110,
+        BGEU = 4'b1111
     } aluOperations;
 
 endmodule
