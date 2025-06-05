@@ -1,6 +1,6 @@
 `include "../../Mux2_1/mux2_1.sv";
 
-module pcadderInputMux(
+module pcAdderInputMux(
     input logic [31:0]  pc,     // INPUT 1 PC
     input logic [31:0]  regis,  // INPUT 2 REGISTER
     input logic         select, // SELECT LINE

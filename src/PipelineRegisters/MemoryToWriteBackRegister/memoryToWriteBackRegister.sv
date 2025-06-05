@@ -1,4 +1,4 @@
-module memoryTOWriteBackRegister(
+module memoryToWriteBackRegister(
     input logic         clock,
     input logic         reset,
     input logic         writeBackFromMemoryOrAlu,
