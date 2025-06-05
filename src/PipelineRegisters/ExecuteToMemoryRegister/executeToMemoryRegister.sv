@@ -1,10 +1,10 @@
-module executeToMemory(
+module executeToMemoryRegister(
     input logic clock,
     input logic reset,
     input logic [31:0] pcAdder,
     input logic [31:0] alu,
     input logic branch,
-    input logic branchEnable,
+    input logic pcUpdate,
     input logic memoryReadEnable,
     input logic memoryWriteEnable,
     input logic writeBackFromMemoryOrAlu,
@@ -13,7 +13,7 @@ module executeToMemory(
     output logic [31:0] pcAdderOut,
     output logic [31:0] aluOut,
     output logic branchOut,
-    output logic branchEnableOut,
+    output logic pcUpdateOut,
     output logic memoryReadEnableOut,
     output logic memoryWriteEnableOut,
     output logic writeBackFromMemoryOrAluOut,
@@ -27,7 +27,7 @@ module executeToMemory(
             pcAdderOut <= 32'b0;
             aluOut <= 31'b0;
             branchOut <= 1'b0;
-            branchEnableOut <= 1'b0;
+            pcUpdateOut <= 1'b0;
             memoryReadEnableOut <= 1'b0;
             memoryWriteEnableOut <= 1'b0;
             writeBackFromMemoryOrAlu <= 1'b0;
@@ -38,7 +38,7 @@ module executeToMemory(
             pcAdderOut <= pcAdder;
             aluOut <= aluOut;
             branchOut <= branch;
-            branchEnableOut <= branchEnable;
+            pcUpdateOut <= pcUpdate;
             memoryReadEnableOut <= memoryReadEnable;
             memoryWriteEnableOut <= memoryWriteEnable;
             writeBackFromMemoryOrAlu <= writeBackFromMemoryOrAluOut;

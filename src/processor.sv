@@ -14,6 +14,11 @@
 `include "Execute\Alu\alu.sv"
 `include "Execute\PcAdderInputMux\pcAdderInputMux.sv"
 `include "Execute\PcAdder\pcAdder.sv"
+`include "PipelineRegisters\ExecuteToMemoryRegister\executeToMemoryRegister.sv"
+`include "MemoryAccess\NextPcValueSelect\nextPcValueSelect.sv"
+`include "MemoryAccess\DataMemory\dataMemory.sv" 
+`include "PipelineRegisters\MemoryToWriteBackRegister\memoryToWriteBackRegister.sv"
+`include "WriteBack\WriteBackMux\writeBackMux.sv"
 
 module processor(
     input logic clock,
@@ -59,19 +64,19 @@ module processor(
     logic [31:0] readData2OutReg;
     logic [31:0] immediateValueOutReg;
     logic [4:0]  rs1OutReg;
-    logic [4:0]  rs2OutReg;
+    logic [4:0]  rs2OutRegDecode;
     logic [4:0]  rdOutReg;
-    logic [2:0]  func3OutReg;
+    logic [2:0]  func3OutRegDecode;
     logic [6:0]  func7OutReg;
-    logic        pcUpdateOutReg;
-    logic        memoryReadEnableOutReg;
-    logic        memoryWriteEnableOutReg;
+    logic        pcUpdateOutRegDecode;
+    logic        memoryReadEnableOutRegDecode;
+    logic        memoryWriteEnableOutRegDecode;
     logic        registerWriteEnableOutReg;
     logic [1:0]  aluSrc1OutReg;
     logic [1:0]  aluSrc2OutReg;
     logic [2:0]  aluOperationOutReg;
     logic        pcAdderSrcOutReg;
-    logic        writeBackFromMemoryOrAluOutReg;
+    logic        writeBackFromMemoryOrAluOutRegDecode;
 
     // EXECUTE
     logic [3:0]  aluControlOut;
@@ -81,6 +86,26 @@ module processor(
     logic        pcBranch;
     logic [31:0] pcAdderOut;
     logic [31:0] newPc;
+
+    // EXECUTE TO MEMORY REGISTER
+    logic [31:0] pcAdderOutReg,
+    logic [31:0] aluOutReg,
+    logic branchOutReg,
+    logic pcUpdateOutReg,
+    logic memoryReadEnableOutReg,
+    logic memoryWriteEnableOutReg,
+    logic writeBackFromMemoryOrAluOutRegExecute,
+    logic [31:0] rs2OutReg,
+    logic [2:0] func3OutReg
+
+    // MEMORY ACCESS
+    logic [31:0] dataMemoryOut;
+
+    // MEMORY TO WRITE BACK REGISTER
+    logic        writeBackFromMemoryOrAluOutRegMemory;
+    logic [31:0] memoryReadDataOutReg;
+    logic [31:0] aluOutDataReg;
+
 
     /* --------------------------------------------------FETCH------------------------------------------------- */
 
@@ -193,8 +218,8 @@ module processor(
         .rdOut(rdOutReg),
         .func3Out(func3OutReg),
         .func7Out(func7OutReg),
-        .pcUpdateOut(pcUpdateOutReg),
-        .memoryReadEnableOut(memoryReadEnableOutReg),
+        .pcUpdateOut(pcUpdateOutRegDecode),
+        .memoryReadEnableOut(memoryReadEnableOutRegDecode),
         .memoryWriteEnableOut(memoryWriteEnableOutReg),
         .registerWriteEnableOut(registerWriteEnableOutReg),
         .aluSrc1Out(aluSrc1OutReg),
@@ -208,7 +233,7 @@ module processor(
 
     aluControl aluControlDut(
         .aluControl(aluOperationOutReg),
-        .func3(func3OutReg),
+        .func3(func3OutRegDecode),
         .func7(func7OutReg),
         .aluControlOut(aluControlOut)
     );
@@ -221,7 +246,7 @@ module processor(
     );
 
     aluInputSelectMux2 aluInputSelectMux2Dut(
-        .registerData(rs2OutReg),
+        .registerData(rs2OutRegDecode),
         .immediateValue(immediateValueOutReg),
         .input2Select(aluSrc2OutReg),
         .input2Alu(input2Alu)
@@ -246,6 +271,72 @@ module processor(
         .pcOrReg(pcAdderOut),
         .imm(immediateValueOutReg)
         .newPc(newPc)
+    );
+
+    /* --------------------------------------------EXECUTE TO MEMORY REGISTER---------------------------------------------*/
+
+    executeToMemoryRegister executeToMemoryRegisterDut(
+        .clock(clock),
+        .reset(reset),
+        .pcAdder(newPc),
+        .alu(aluOutput),
+        .branch(pcBranch),
+        .pcUpdate(pcUpdateOutRegDecode),
+        .memoryReadEnable(memoryReadEnableOutRegDecode),
+        .memoryWriteEnable(memoryWriteEnableOutRegDecode),
+        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutRegDecode),
+        .rs2(rs2OutRegDecode),
+        .func3(func3OutRegDecode),
+        .pcAdderOut(pcAdderOutReg),
+        .aluOut(aluOutReg),
+        .branchOut(branchOutReg),
+        .pcUpdateOut(pcUpdateOutReg),
+        .memoryReadEnableOut(memoryReadEnableOutReg),
+        .memoryWriteEnableOut(memoryWriteEnableOutReg),
+        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutRegExecute),
+        .rs2Out(rs2OutReg),
+        .func3Out(func3OutReg)
+    );
+
+    /* ------------------------------------------------MEMORY ACCESS-----------------------------------------------------*/
+
+    nextPcValueSelect nextPcValueSelectDut(
+        .pcUpadate(pcUpdateOutReg),
+        .branchAlu(branchOutReg),
+        .pcSelectOut(pcIncrementOrJump)
+    );
+
+    dataMemory dataMemoryDut(
+        .clock(clock),
+        .reset(reset),
+        .memoryReadEnable(memoryReadEnableOutReg),
+        .memoryWriteEnable(memoryWriteEnableOutReg),
+        .func3(func3OutReg),
+        .memoryAddress(aluOutReg),
+        .writeData(rs2OutReg)
+        .readData(dataMemoryOut)
+    );
+
+    /* -----------------------------------------MEMORY TO WRITE BACK REGISTER--------------------------------------------*/
+
+    memoryToWriteBackRegister memoryToWriteBackRegisterDut(
+        .clock(clock),
+        .reset(reset),
+        .writeBackFromAluOrMemory(writeBackFromMemoryOrAluOutRegExecute),
+        .memoryReadData(dataMemoryOut),
+        .aluData(aluOutReg),
+        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutRegMemory),
+        .memoryReadDataOut(memoryReadDataOutReg),
+        .aluDataOut(aluOutDataReg)
+    );
+
+    /* ------------------------------------------------WRITE BACK--------------------------------------------------------*/
+
+    writeBackMux writeBackMuxDut(
+        .aluData(aluOutDataReg),
+        .memoryData(memoryReadDataOutReg),
+        .writeBackMemoryOrAlu(writeBackFromMemoryOrAluOutRegMemory),
+        .dataBack(writeData)
     );
     
 endmodule
