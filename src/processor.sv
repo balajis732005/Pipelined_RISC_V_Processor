@@ -8,6 +8,12 @@
 `include "Decode\ControlUnit\controlUnit.sv"
 `include "Decode\ImmediateGenerator\immediateGenerator.sv"
 `include "PipelineRegisters\DecodeToExecuteRegister\decodeToExecuteRegister.sv"
+`include "Execute\AluControl\aluControl.sv"
+`include "Execute\AluInputSelectMux1\aluInputSelectMux1.sv"
+`include "Execute\AluInputSelectMux2\aluInputSelectMux2.sv"
+`include "Execute\Alu\alu.sv"
+`include "Execute\PcAdderInputMux\pcAdderInputMux.sv"
+`include "Execute\PcAdder\pcAdder.sv"
 
 module processor(
     input logic clock,
@@ -68,6 +74,13 @@ module processor(
     logic        writeBackFromMemoryOrAluOutReg;
 
     // EXECUTE
+    logic [3:0]  aluControlOut;
+    logic [31:0] input1Alu;
+    logic [31:0] input2Alu;
+    logic [31:0] aluOutput;
+    logic        pcBranch;
+    logic [31:0] pcAdderOut;
+    logic [31:0] newPc;
 
     /* --------------------------------------------------FETCH------------------------------------------------- */
 
@@ -193,6 +206,46 @@ module processor(
 
     /* ------------------------------------------------EXECUTE-------------------------------------------------------*/
 
-    
+    aluControl aluControlDut(
+        .aluControl(aluOperationOutReg),
+        .func3(func3OutReg),
+        .func7(func7OutReg),
+        .aluControlOut(aluControlOut)
+    );
+
+    aluInputSelectMux1 aluInputSelectMux1Dut(
+        .registerData(rs1OutReg),
+        .pc(pcOutRegDecode),
+        .input1Select(aluSrc1OutReg),
+        .input1Alu(input1Alu)
+    );
+
+    aluInputSelectMux2 aluInputSelectMux2Dut(
+        .registerData(rs2OutReg),
+        .immediateValue(immediateValueOutReg),
+        .input2Select(aluSrc2OutReg),
+        .input2Alu(input2Alu)
+    );
+
+    alu aluDut(
+        .in1(input1Alu),
+        .in2(input2Alu),
+        .aluOperation(aluControlOut),
+        .aluOutput(aluOutput),
+        .branch(pcBranch)
+    );
+
+    pcAdderInputMux pcAdderInputMuxDut(
+        .pc(pcOutRegDecode),
+        .regis(rs1OutReg),
+        .select(pcAdderSrcOutReg),
+        .out(pcAdderOut)
+    );
+
+    pcAdder pcAdderDut(
+        .pcOrReg(pcAdderOut),
+        .imm(immediateValueOutReg)
+        .newPc(newPc)
+    );
     
 endmodule
