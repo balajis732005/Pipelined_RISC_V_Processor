@@ -96,7 +96,7 @@ module processor(
     logic        memoryWriteEnableOutReg,
     logic        writeBackFromMemoryOrAluOutRegExecute,
     logic [31:0] rs2OutReg,
-    logic [2:0] func3OutReg
+    logic [2:0]  func3OutReg
 
     // MEMORY ACCESS
     logic [31:0] dataMemoryOut;
