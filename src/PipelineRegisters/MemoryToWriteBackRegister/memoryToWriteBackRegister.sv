@@ -1,12 +1,12 @@
 module memoryTOWriteBackRegister(
-    input logic clock,
-    input logic reset,
-    input logic writeBackFromMemoryOrAlu,
-    input [31:0] logic memoryReadData,
-    input [31:0] logic aluData
-    output logic writeBackFromMemoryOrAluOut,
-    output [31:0] logic memoryReadDataOut,
-    output [31:0] logic aluDataOut
+    input logic         clock,
+    input logic         reset,
+    input logic         writeBackFromMemoryOrAlu,
+    input logic [31:0]  memoryReadData,
+    input logic [31:0]  aluData,
+    output logic        writeBackFromMemoryOrAluOut,
+    output logic [31:0] memoryReadDataOut,
+    output logic [31:0] aluDataOut
 );
 
     always_ff @(posedge clock) begin

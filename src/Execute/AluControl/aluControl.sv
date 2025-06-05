@@ -1,9 +1,9 @@
 `include "../../DefaultParameters/defaultParameters.sv";
 
 module aluControl(
-    input logic [2:0] aluControl,    // ALUCONTROL
-    input logic [2:0] func3,         // FUNC3 OPERATION
-    input logic [6:0] func7,         // FUNC7 OPERATION
+    input logic [2:0]  aluControl,    // ALUCONTROL
+    input logic [2:0]  func3,         // FUNC3 OPERATION
+    input logic [6:0]  func7,         // FUNC7 OPERATION
     output logic [3:0] aluControlOut // ALU TO WORK OPEARTION
 );
 

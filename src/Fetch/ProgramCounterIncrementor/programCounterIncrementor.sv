@@ -1,5 +1,5 @@
 module programCounterIncrementor(
-    input logic [31:0] pcCurrent, // CURRENT PC
+    input logic [31:0]  pcCurrent, // CURRENT PC
     output logic [31:0] pcNext    // NEXT PC
 );
 

@@ -1,9 +1,9 @@
 module mux4_1(
-    input logic [31:0] in1,
-    input logic [31:0] in2,
-    input logic [31:0] in3,
-    input logic [31:0] in4,
-    input logic [1:0] select,
+    input logic [31:0]  in1,
+    input logic [31:0]  in2,
+    input logic [31:0]  in3,
+    input logic [31:0]  in4,
+    input logic [1:0]   select,
     output logic [31:0] out
 );
 

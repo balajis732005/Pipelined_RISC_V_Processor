@@ -1,6 +1,6 @@
 module nextPcValueSelect(
-    input logic pcUpadate,   // PC_UPDATE FROM CONTROL UNIT
-    input logic branchAlu,   // BRANCH FROM ALU
+    input logic  pcUpadate,   // PC_UPDATE FROM CONTROL UNIT
+    input logic  branchAlu,   // BRANCH FROM ALU
     output logic pcSelectOut // NEXT PC VALUE SELECTION
 );
 

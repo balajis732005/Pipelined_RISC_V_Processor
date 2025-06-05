@@ -1,6 +1,6 @@
 module fetchToDecodeRegister (
-    input  logic clock,
-    input  logic reset,
+    input  logic        clock,
+    input  logic        reset,
     input  logic [31:0] pc,
     input  logic [31:0] instruction,
     output logic [31:0] pcOut,

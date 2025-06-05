@@ -16,6 +16,7 @@ module controlUnit(
     /*
     ALUSRC1 -> 00 => REGISTER | 01 => PC | 10 => CONSTANT - 0
     ALUSRC2 -> 00 => REGISTER | 01 => IMMEDIATE | 10 => CONSTANT - 1
+    PCADDERSRC -> 0 => PC | 1 => REGISTER
     ALUOPERATION => Ref defaultParameters.sv
     */
 

@@ -90,11 +90,11 @@ module processor(
     // EXECUTE TO MEMORY REGISTER
     logic [31:0] pcAdderOutReg,
     logic [31:0] aluOutReg,
-    logic branchOutReg,
-    logic pcUpdateOutReg,
-    logic memoryReadEnableOutReg,
-    logic memoryWriteEnableOutReg,
-    logic writeBackFromMemoryOrAluOutRegExecute,
+    logic        branchOutReg,
+    logic        pcUpdateOutReg,
+    logic        memoryReadEnableOutReg,
+    logic        memoryWriteEnableOutReg,
+    logic        writeBackFromMemoryOrAluOutRegExecute,
     logic [31:0] rs2OutReg,
     logic [2:0] func3OutReg
 
@@ -106,8 +106,7 @@ module processor(
     logic [31:0] memoryReadDataOutReg;
     logic [31:0] aluOutDataReg;
 
-
-    /* --------------------------------------------------FETCH------------------------------------------------- */
+    /* ----------------------------------------------------FETCH--------------------------------------------------- */
 
     programCounterInputMux programCounterInputMuxDut(
         .pcIncrement(pcIncrement),
@@ -144,7 +143,7 @@ module processor(
         .instOut(instructionReg)
     );
 
-    /* ---------------------------------------------DECODE------------------------------------------------------*/
+    /* -----------------------------------------------DECODE--------------------------------------------------------*/
 
     instructionDecoder instructionDecoderDut(
         .instruction(instructionReg),
@@ -186,7 +185,7 @@ module processor(
         .immediateValue(immediateValue)
     );
 
-    /* ------------------------------------------DECODE TO EXECUTE REGISTER-----------------------------------------*/
+    /* --------------------------------------DECODE TO EXECUTE PIPELINED REGISTER---------------------------------------*/
 
     decodeToExecuteRegister decodeToExecuteRegisterDut(
         .clock(clock),
@@ -229,7 +228,7 @@ module processor(
         .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutReg)
     );
 
-    /* ------------------------------------------------EXECUTE-------------------------------------------------------*/
+    /* ------------------------------------------------EXECUTE--------------------------------------------------------*/
 
     aluControl aluControlDut(
         .aluControl(aluOperationOutReg),
@@ -273,7 +272,7 @@ module processor(
         .newPc(newPc)
     );
 
-    /* --------------------------------------------EXECUTE TO MEMORY REGISTER---------------------------------------------*/
+    /* ----------------------------------------EXECUTE TO MEMORY PIPELINED REGISTER---------------------------------------*/
 
     executeToMemoryRegister executeToMemoryRegisterDut(
         .clock(clock),
@@ -317,7 +316,7 @@ module processor(
         .readData(dataMemoryOut)
     );
 
-    /* -----------------------------------------MEMORY TO WRITE BACK REGISTER--------------------------------------------*/
+    /* -------------------------------------MEMORY TO WRITE BACK PIPELINED REGISTER--------------------------------------*/
 
     memoryToWriteBackRegister memoryToWriteBackRegisterDut(
         .clock(clock),
