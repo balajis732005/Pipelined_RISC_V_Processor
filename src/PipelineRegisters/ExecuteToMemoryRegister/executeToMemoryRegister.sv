@@ -8,7 +8,7 @@ module executeToMemoryRegister(
     input logic         memoryReadEnable,
     input logic         memoryWriteEnable,
     input logic         writeBackFromMemoryOrAlu,
-    input logic [31:0]  rs2,
+  	input logic [31:0]  readData2,
     input logic [2:0]   func3,
     output logic [31:0] pcAdderOut,
     output logic [31:0] aluOut,
@@ -17,7 +17,7 @@ module executeToMemoryRegister(
     output logic        memoryReadEnableOut,
     output logic        memoryWriteEnableOut,
     output logic        writeBackFromMemoryOrAluOut,
-    output logic [31:0] rs2Out,
+  	output logic [31:0] readData2Out,
     output logic [2:0]  func3Out
 );
 
@@ -31,7 +31,7 @@ module executeToMemoryRegister(
             memoryReadEnableOut <= 1'b0;
             memoryWriteEnableOut <= 1'b0;
             writeBackFromMemoryOrAluOut <= 1'b0;
-            rs2Out <= 32'b0;
+            readData2Out <= 32'b0;
             func3Out <= 3'b0;
         end
         else begin
@@ -42,7 +42,7 @@ module executeToMemoryRegister(
             memoryReadEnableOut <= memoryReadEnable;
             memoryWriteEnableOut <= memoryWriteEnable;
             writeBackFromMemoryOrAluOut <= writeBackFromMemoryOrAlu;
-            rs2Out <= rs2;
+            readData2Out <= readData2;
             func3Out <= func3;
         end
     end

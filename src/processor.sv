@@ -60,9 +60,6 @@ module processor(
     logic [31:0] readData1DecodeToExecute;
     logic [31:0] readData2DecodeToExecute;
     logic [31:0] immediateValueDecodeToExecute;
-    logic [4:0]  rs1DecodeToExecute;
-    logic [4:0]  rs2DecodeToExecute;
-    logic [4:0]  rdDecodeToExecute;
     logic [2:0]  func3DecodeToExecute;
     logic [6:0]  func7DecodeToExecute;
     logic        pcUpdateDecodeToExecute;
@@ -92,7 +89,7 @@ module processor(
     logic        memoryReadEnableOutExecuteToMemory;
     logic        memoryWriteEnableOutExecuteToMemory;
     logic        writeBackFromMemoryOrAluOutExecuteToMemory;
-  	logic [31:0] rs2OutExecuteToMemory;
+  	logic [31:0] readData2OutExecuteToMemory;
   	logic [2:0]  func3OutExecuteToMemory;
 
     // MEMORY ACCESS
@@ -195,9 +192,6 @@ module processor(
         .readData1(readData1),
         .readData2(readData2),
         .immediateValue(immediateValue),
-        .rs1(rs1),
-        .rs2(rs2),
-        .rd(rd),
         .func3(func3),
         .func7(func7),
         .pcUpdate(pcUpdate),
@@ -213,9 +207,6 @@ module processor(
       	.readData1Out(readData1DecodeToExecute),
         .readData2Out(readData2DecodeToExecute),
         .immediateValueOut(immediateValueDecodeToExecute),
-        .rs1Out(rs1DecodeToExecute),
-        .rs2Out(rs2DecodeToExecute),
-        .rdOut(rdDecodeToExecute),
       	.func3Out(func3DecodeToExecute),
         .func7Out(func7DecodeToExecute),
         .pcUpdateOut(pcUpdateDecodeToExecute),
@@ -226,7 +217,7 @@ module processor(
         .aluSrc2Out(aluSrc2DecodeToExecute),
         .aluOperationOut(aluOperationDecodeToExecute),
         .pcAdderSrcOut(pcAdderSrcDecodeToExecute),
-        		.writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutDecodeToExecute)
+        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutDecodeToExecute)
     );
 
     // EXECUTE
@@ -239,14 +230,14 @@ module processor(
     );
 
     aluInputSelectMux1 aluInputSelectMux1Dut(
-        .registerData(rs1DecodeToExecute),
+      .registerData(readData1DecodeToExecute),
         .pc(pcOutputDecodeToExecute),
         .input1Select(aluSrc1DecodeToExecute),
         .input1Alu(input1Alu)
     );
 
     aluInputSelectMux2 aluInputSelectMux2Dut(
-        .registerData(rs2DecodeToExecute),
+      .registerData(readData2DecodeToExecute),
         .immediateValue(immediateValueDecodeToExecute),
         .input2Select(aluSrc2DecodeToExecute),
         .input2Alu(input2Alu)
@@ -262,7 +253,7 @@ module processor(
 
     pcAdderInputMux pcAdderInputMuxDut(
         .pc(pcOutputDecodeToExecute),
-        .regis(rs1DecodeToExecute),
+      	.regis(readData1DecodeToExecute),
         .select(pcAdderSrcDecodeToExecute),
       	.out(pcAdderInput)
     );
@@ -285,7 +276,7 @@ module processor(
         .memoryReadEnable(memoryReadEnableDecodeToExecute),
         .memoryWriteEnable(memoryWriteEnableDecodeToExecute),
         .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutDecodeToExecute),
-        .rs2(rs2DecodeToExecute),
+      	.readData2(readData2DecodeToExecute),
         .func3(func3DecodeToExecute),
         .pcAdderOut(pcAdderOutExecuteToMemory),
         .aluOut(aluOutExecuteToMemory),
@@ -294,7 +285,7 @@ module processor(
       	.memoryReadEnableOut(memoryReadEnableOutExecuteToMemory),
       	.memoryWriteEnableOut(memoryWriteEnableOutExecuteToMemory),
         .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutExecuteToMemory),
-      	.rs2Out(rs2OutExecuteToMemory),
+      	.readData2Out(readData2OutExecuteToMemory),
       	.func3Out(func3OutExecuteToMemory)
     );
 
@@ -313,7 +304,7 @@ module processor(
       	.memoryWriteEnable(memoryWriteEnableOutExecuteToMemory),
         .func3(func3OutExecuteToMemory),
         .memoryAddress(aluOutExecuteToMemory),
-      	.writeData(rs2OutExecuteToMemory),
+      	.writeData(readData2OutExecuteToMemory),
         .readData(dataMemoryOut)
     );
 
