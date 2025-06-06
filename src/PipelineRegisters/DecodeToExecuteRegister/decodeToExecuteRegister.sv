@@ -10,7 +10,7 @@ module decodeToExecuteRegister (
     input logic [4:0]   rd,
     input logic [2:0]   func3,
     input logic [6:0]   func7,
-    input logic         pcUpadte,
+    input logic         pcUpdate,
     input logic         memoryReadEnable,
     input logic         memoryWriteEnable,
     input logic         registerWriteEnable,
@@ -18,7 +18,7 @@ module decodeToExecuteRegister (
     input logic [1:0]   aluSrc2,
     input logic [2:0]   aluOperation,
     input logic         pcAdderSrc,
-    input logic         writeBackFromMemoryOrAlu
+    input logic         writeBackFromMemoryOrAlu,
     output logic [31:0] pcOut,
     output logic [31:0] readData1Out,
     output logic [31:0] readData2Out,
@@ -50,7 +50,7 @@ module decodeToExecuteRegister (
             rdOut <= 5'b0;
             func3Out <= 3'b0;
             func7Out <= 7'b0;
-            branchEnableOut <= 1'b0;
+            pcUpdateOut <= 1'b0;
             memoryReadEnableOut <= 1'b0;
             memoryWriteEnableOut <= 1'b0;
             registerWriteEnableOut <= 1'b0;
@@ -69,7 +69,7 @@ module decodeToExecuteRegister (
             rdOut <= rd;
             func3Out <= func3;
             func7Out <= func7;
-            branchEnableOut <= branchEnable;
+            pcUpdateOut <= pcUpdate;
             memoryReadEnableOut <= memoryReadEnable;
             memoryWriteEnableOut <= memoryWriteEnable;
             registerWriteEnableOut <= registerWriteEnable;

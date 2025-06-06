@@ -8,7 +8,7 @@ module pcAdderInputMux(
 );
 
     // 2 x 1 MUX
-    mux2_1 m1(
+    mux2_1 muxPCADDERIN(
         .in1(pc),
         .in2(regis),
         .select(select),

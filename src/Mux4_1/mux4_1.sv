@@ -7,6 +7,11 @@ module mux4_1(
     output logic [31:0] out
 );
 
-    assign out = ((sel==2'b00) ? in1 : ((sel==2'01) ? : in2 : ((sel==2'b10) ? in3 : in4)));
+  assign out = (
+    (select == 2'b00) ? in1 : 
+      ((select == 2'b01) ? in2 :
+       ((select == 2'b10) ? in3 : in4)
+      )
+  );
 
 endmodule

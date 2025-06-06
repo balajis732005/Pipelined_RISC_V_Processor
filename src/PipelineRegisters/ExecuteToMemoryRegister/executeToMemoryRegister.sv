@@ -30,9 +30,9 @@ module executeToMemoryRegister(
             pcUpdateOut <= 1'b0;
             memoryReadEnableOut <= 1'b0;
             memoryWriteEnableOut <= 1'b0;
-            writeBackFromMemoryOrAlu <= 1'b0;
+            writeBackFromMemoryOrAluOut <= 1'b0;
             rs2Out <= 32'b0;
-            func3 <= 3'b0;
+            func3Out <= 3'b0;
         end
         else begin
             pcAdderOut <= pcAdder;
@@ -41,7 +41,7 @@ module executeToMemoryRegister(
             pcUpdateOut <= pcUpdate;
             memoryReadEnableOut <= memoryReadEnable;
             memoryWriteEnableOut <= memoryWriteEnable;
-            writeBackFromMemoryOrAlu <= writeBackFromMemoryOrAluOut;
+            writeBackFromMemoryOrAluOut <= writeBackFromMemoryOrAlu;
             rs2Out <= rs2;
             func3Out <= func3;
         end

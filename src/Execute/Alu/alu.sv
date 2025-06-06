@@ -1,4 +1,4 @@
-`include "../../DefaultParameters/defaultParameters.sv";
+`include "../../DefaultParameters/defaultParameters.svh"
 
 module alu(
     input  logic [31:0] in1,         // INPUT 1

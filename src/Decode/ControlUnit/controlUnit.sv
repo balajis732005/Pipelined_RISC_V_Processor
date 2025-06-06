@@ -1,4 +1,4 @@
-`include "../../DefaultParameters/defaultParameters.sv"
+`include "../../DefaultParameters/defaultParameters.svh"
 
 module controlUnit(
     input  logic [6:0] opcode,                  // OPCODE

@@ -11,11 +11,14 @@ module dataMemory(
 
     // 1KB x 32-bit MEMORY
     logic [31:0] dataMem [0:1023];
+  	
+  	logic [31:0] rawRead;
+  	logic [31:0] modifiedWriteData;
 
     // READ LOGIC
     always_comb begin
         if (memoryReadEnable) begin
-            logic [31:0] rawRead = dataMem[memoryAddress[11:2]]; // word-aligned access
+            rawRead = dataMem[memoryAddress[11:2]];
             case (func3)
                 3'b000: readData = {{24{rawRead[7]}}, rawRead[7:0]};     // LB
                 3'b001: readData = {{16{rawRead[15]}}, rawRead[15:0]};   // LH
@@ -35,7 +38,7 @@ module dataMemory(
                 dataMem[i] <= 32'b0;
             end
         end else if (memoryWriteEnable) begin
-            logic [31:0] modifiedWriteData = writeData;
+            modifiedWriteData = writeData;
             case (func3)
                 3'b000: modifiedWriteData = {24'b0, writeData[7:0]};     // SB
                 3'b001: modifiedWriteData = {16'b0, writeData[15:0]};    // SH

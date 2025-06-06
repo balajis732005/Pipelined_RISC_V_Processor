@@ -1,4 +1,4 @@
-`include "../../DefaultParameters/defaultParameters.sv"
+`include "../../DefaultParameters/defaultParameters.svh"
 
 module immediateGenerator(
     input  logic [31:0] instruction,   // INSTRUCTION

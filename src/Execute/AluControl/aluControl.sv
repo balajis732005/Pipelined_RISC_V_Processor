@@ -1,4 +1,4 @@
-`include "../../DefaultParameters/defaultParameters.sv";
+`include "../../DefaultParameters/defaultParameters.svh";
 
 module aluControl(
     input logic [2:0]  aluControl,    // ALUCONTROL
@@ -17,27 +17,27 @@ module aluControl(
             end
 
             // J-TYPE
-            typeOfInstructionAluControl.JType: begin
+            typeOfInstructionAluControl.JTypeALU: begin
                 aluControlOut = 4'b0000; // ADD - JAL
             end
 
             // I-TYPE_JALR
-            typeOfInstructionAluControl.ITypeJALR: begin
+            typeOfInstructionAluControl.ITypeJALR_ALU: begin
                 aluControlOut = 4'b0000; // ADD - JALR
             end
 
             // U-TYPE
-            typeOfInstructionAluControl.UType: begin
+            typeOfInstructionAluControl.UTypeALU: begin
                 aluControlOut = 4'b0000; // ADD - LUI
             end
 
             // U-TYPE_AUIPC
-            typeOfInstructionAluControl.UTypeAUIPC: begin
+            typeOfInstructionAluControl.UTypeAUIPC_ALU: begin
                 aluControlOut = 4'b0000; // ADD - AUPIC
             end
 
             // B-TYPE
-            typeOfInstructionAluControl.BType: begin
+            typeOfInstructionAluControl.BTypeALU: begin
                 case(func3)
                     3'b000 : aluControlOut = 1010; // BEQ
                     3'b001 : aluControlOut = 1011; // BNE
@@ -50,7 +50,7 @@ module aluControl(
             end
 
             // R-TYPE
-            typeOfInstructionAluControl.RType: begin
+            typeOfInstructionAluControl.RTypeALU: begin
                 case(func3)
                     3'b000: aluControlOut = (func7 == 7'b0100000) ? 4'b0001 : 4'b0000; // SUB/ADD
                     3'b111: aluControlOut = 4'b0010; // AND
@@ -65,7 +65,7 @@ module aluControl(
             end
 
             // I-TYPE
-            typeOfInstructionAluControl.IType: begin
+            typeOfInstructionAluControl.ITypeALU: begin
                 case(func3)
                     3'b000: aluControlOut = 4'b0000; // ADDI
                     3'b111: aluControlOut = 4'b0010; // ANDI

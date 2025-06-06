@@ -7,12 +7,12 @@ module aluInputSelectMux2(
     output logic [31:0] input2Alu      // INPUT 2 TO ALU
 );
 
-    // MUX 2 x 1
-    mux2_1 m1 (
+    // MUX 4 x 1
+    mux4_1 muxALUIN2 (
         .in1(registerData),
         .in2(immediateValue),
         .in3(32'b1),
-        .in4(32'bx),
+      	.in4(32'b0),
         .select(input2Select),
         .out(input2Alu)
     );

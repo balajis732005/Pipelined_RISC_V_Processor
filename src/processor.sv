@@ -26,16 +26,14 @@ module processor(
 );
 
     // FETCH
-    logic [31:0] pcIncrement;
-    logic [31:0] pcJump;
-    logic        pcIncrementOrJump;
+  	logic [31:0] pcIncrementOut;
     logic [31:0] pcInput;
-    logic [31:0] pcOut;
+  	logic [31:0] pcOutput;
     logic [31:0] currentInstruction;
 
     // FETCH TO DECODE REGISTER
-    logic [31:0] pcOutRegFetch;
-    logic [31:0] instructionReg;
+  	logic [31:0] pcOutputFetchToDecode;
+  	logic [31:0] currentInstructionFetchToDecode;
 
     // DECODE
     logic [6:0]  opcode;
@@ -52,31 +50,30 @@ module processor(
     logic [1:0]  aluSrc2;
     logic [2:0]  aluOperation;
     logic        pcAdderSrc;
-    logic        writeBackFromAluOrMemory;
-    logic [31:0] writeData;
+    logic        writeBackFromMemoryOrAlu;
     logic [31:0] readData1;
     logic [31:0] readData2;
     logic [31:0] immediateValue;
 
     // DECODE TO EXECUTE REGISTER
-    logic [31:0] pcOutRegDecode;
-    logic [31:0] readData1OutReg;
-    logic [31:0] readData2OutReg;
-    logic [31:0] immediateValueOutReg;
-    logic [4:0]  rs1OutReg;
-    logic [4:0]  rs2OutRegDecode;
-    logic [4:0]  rdOutReg;
-    logic [2:0]  func3OutRegDecode;
-    logic [6:0]  func7OutReg;
-    logic        pcUpdateOutRegDecode;
-    logic        memoryReadEnableOutRegDecode;
-    logic        memoryWriteEnableOutRegDecode;
-    logic        registerWriteEnableOutReg;
-    logic [1:0]  aluSrc1OutReg;
-    logic [1:0]  aluSrc2OutReg;
-    logic [2:0]  aluOperationOutReg;
-    logic        pcAdderSrcOutReg;
-    logic        writeBackFromMemoryOrAluOutRegDecode;
+  	logic [31:0] pcOutputDecodeToExecute;
+    logic [31:0] readData1DecodeToExecute;
+    logic [31:0] readData2DecodeToExecute;
+    logic [31:0] immediateValueDecodeToExecute;
+    logic [4:0]  rs1DecodeToExecute;
+    logic [4:0]  rs2DecodeToExecute;
+    logic [4:0]  rdDecodeToExecute;
+    logic [2:0]  func3DecodeToExecute;
+    logic [6:0]  func7DecodeToExecute;
+    logic        pcUpdateDecodeToExecute;
+    logic        memoryReadEnableDecodeToExecute;
+    logic        memoryWriteEnableDecodeToExecute;
+    logic        registerWriteEnableDecodeToExecute;
+    logic [1:0]  aluSrc1DecodeToExecute;
+    logic [1:0]  aluSrc2DecodeToExecute;
+    logic [2:0]  aluOperationDecodeToExecute;
+    logic        pcAdderSrcDecodeToExecute;
+    logic        writeBackFromMemoryOrAluOutDecodeToExecute;
 
     // EXECUTE
     logic [3:0]  aluControlOut;
@@ -84,34 +81,38 @@ module processor(
     logic [31:0] input2Alu;
     logic [31:0] aluOutput;
     logic        pcBranch;
-    logic [31:0] pcAdderOut;
+  	logic [31:0] pcAdderInput;
     logic [31:0] newPc;
 
     // EXECUTE TO MEMORY REGISTER
-    logic [31:0] pcAdderOutReg,
-    logic [31:0] aluOutReg,
-    logic        branchOutReg,
-    logic        pcUpdateOutReg,
-    logic        memoryReadEnableOutReg,
-    logic        memoryWriteEnableOutReg,
-    logic        writeBackFromMemoryOrAluOutRegExecute,
-    logic [31:0] rs2OutReg,
-    logic [2:0]  func3OutReg
+  	logic [31:0] pcAdderOutExecuteToMemory;
+  	logic [31:0] aluOutExecuteToMemory;
+    logic        branchOutExecuteToMemory;
+    logic        pcUpdateOutExecuteToMemory;
+    logic        memoryReadEnableOutExecuteToMemory;
+    logic        memoryWriteEnableOutExecuteToMemory;
+    logic        writeBackFromMemoryOrAluOutExecuteToMemory;
+  	logic [31:0] rs2OutExecuteToMemory;
+  	logic [2:0]  func3OutExecuteToMemory;
 
     // MEMORY ACCESS
+  	logic pcIncrementOrJump;
     logic [31:0] dataMemoryOut;
 
     // MEMORY TO WRITE BACK REGISTER
-    logic        writeBackFromMemoryOrAluOutRegMemory;
-    logic [31:0] memoryReadDataOutReg;
-    logic [31:0] aluOutDataReg;
+    logic        writeBackFromMemoryOrAluOutMemoryToWriteBack;
+    logic [31:0] memoryReadDataOutMemoryToWriteBack;
+    logic [31:0] aluOutDataMemoryToWriteBack;
+  
+    // WRITE BACK
+  	logic [31:0] registerWriteData;
 
-    /* ----------------------------------------------------FETCH--------------------------------------------------- */
+    // FETCH
 
     programCounterInputMux programCounterInputMuxDut(
-        .pcIncrement(pcIncrement),
-        .pcJump(pcJump),
-        .pcIncrementOrJump(pcIncrementOrJump),
+      .pcIncrement(pcIncrementOut),
+      	.pcJump(),
+        .pcIncrementOrJump(),
         .pcInput(pcInput)
     );
 
@@ -119,34 +120,34 @@ module processor(
         .clock(clock),
         .reset(reset),
         .pcIn(pcInput),
-        .pcOut(pcOut)
+      	.pcOut(pcOutput)
     );
 
     programCounterIncrementor programCounterIncrementorDut(
-        .pcCurrent(pcOut),
-        .pcNext(pcIncrement)
+      	.pcCurrent(pcOutput),
+      	.pcNext(pcIncrementOut)
     );
 
     instructionMemory instructionMemoryDut(
-        .instructionAddress(pcOut),
+      	.instructionAddress(pcOutput),
         .instruction(currentInstruction)
     );
 
-    /* ----------------------------------FETCH TO DECODE PIPELINED REGISTER--------------------------------------*/
+    // FETCH TO DECODE PIPELINED REGISTER
 
     fetchToDecodeRegister fetchToDecodeRegisterDut(
         .clock(clock),
         .reset(reset),
-        .pc(pcOut),
+      	.pc(pcOutput),
         .instruction(currentInstruction),
-        .pcOut(pcOutRegFetch),
-        .instOut(instructionReg)
+      	.pcOut(pcOutputFetchToDecode),
+      	.instOut(currentInstructionFetchToDecode)
     );
 
-    /* -----------------------------------------------DECODE--------------------------------------------------------*/
+    // DECODE
 
     instructionDecoder instructionDecoderDut(
-        .instruction(instructionReg),
+        .instruction(currentInstructionFetchToDecode),
         .opcode(opcode),
         .rd(rd),
         .func3(func3),
@@ -165,7 +166,7 @@ module processor(
         .aluSrc2(aluSrc2),
         .aluOperation(aluOperation),
         .pcAdderSrc(pcAdderSrc),
-        .writeBackFromAluOrMemory(writeBackFromAluOrMemory)
+      .writeBackFromAluOrMemory(writeBackFromMemoryOrAlu)
     );
 
     registerFile registerFileDut(
@@ -174,23 +175,23 @@ module processor(
         .rs1(rs1),
         .rs2(rs2),
         .rd(rd),
-        .writeData(writeData),
+        .writeData(registerWriteData),
         .registerWrite(registerWriteEnable),
         .readData1(readData1),
         .readData2(readData2)
     );
 
     immediateGenerator immediateGeneratorDut(
-        .instruction(instructionReg),
+        .instruction(currentInstructionFetchToDecode),
         .immediateValue(immediateValue)
     );
 
-    /* --------------------------------------DECODE TO EXECUTE PIPELINED REGISTER---------------------------------------*/
+    // DECODE TO EXECUTE PIPELINED REGISTER
 
     decodeToExecuteRegister decodeToExecuteRegisterDut(
         .clock(clock),
         .reset(reset),
-        .pc(pcOutRegFetch),
+        .pc(pcOutputFetchToDecode),
         .readData1(readData1),
         .readData2(readData2),
         .immediateValue(immediateValue),
@@ -199,7 +200,7 @@ module processor(
         .rd(rd),
         .func3(func3),
         .func7(func7),
-        .pcUpadte(pcUpdate),
+        .pcUpdate(pcUpdate),
         .memoryReadEnable(memoryReadEnable),
         .memoryWriteEnable(memoryWriteEnable),
         .registerWriteEnable(registerWriteEnable),
@@ -208,46 +209,46 @@ module processor(
         .aluOperation(aluOperation),
         .pcAdderSrc(pcAdderSrc),
         .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAlu),
-        .pcOut(pcOutRegDecode),
-        .readData1Out(readData1OutReg),
-        .readData2Out(readData2OutReg),
-        .immediateValueOut(immediateValueOutReg),
-        .rs1Out(rs1OutReg),
-        .rs2Out(rs2OutReg),
-        .rdOut(rdOutReg),
-        .func3Out(func3OutReg),
-        .func7Out(func7OutReg),
-        .pcUpdateOut(pcUpdateOutRegDecode),
-        .memoryReadEnableOut(memoryReadEnableOutRegDecode),
-        .memoryWriteEnableOut(memoryWriteEnableOutReg),
-        .registerWriteEnableOut(registerWriteEnableOutReg),
-        .aluSrc1Out(aluSrc1OutReg),
-        .aluSrc2Out(aluSrc2OutReg),
-        .aluOperationOut(aluOperationOutReg),
-        .pcAdderSrcOut(pcAdderSrcOutReg),
-        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutReg)
+        .pcOut(pcOutputDecodeToExecute),
+      	.readData1Out(readData1DecodeToExecute),
+        .readData2Out(readData2DecodeToExecute),
+        .immediateValueOut(immediateValueDecodeToExecute),
+        .rs1Out(rs1DecodeToExecute),
+        .rs2Out(rs2DecodeToExecute),
+        .rdOut(rdDecodeToExecute),
+      	.func3Out(func3DecodeToExecute),
+        .func7Out(func7DecodeToExecute),
+        .pcUpdateOut(pcUpdateDecodeToExecute),
+        .memoryReadEnableOut(memoryReadEnableDecodeToExecute),
+        .memoryWriteEnableOut(memoryWriteEnableDecodeToExecute),
+        .registerWriteEnableOut(registerWriteEnableDecodeToExecute),
+        .aluSrc1Out(aluSrc1DecodeToExecute),
+        .aluSrc2Out(aluSrc2DecodeToExecute),
+        .aluOperationOut(aluOperationDecodeToExecute),
+        .pcAdderSrcOut(pcAdderSrcDecodeToExecute),
+        		.writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutDecodeToExecute)
     );
 
-    /* ------------------------------------------------EXECUTE--------------------------------------------------------*/
+    // EXECUTE
 
     aluControl aluControlDut(
-        .aluControl(aluOperationOutReg),
-        .func3(func3OutRegDecode),
-        .func7(func7OutReg),
+        .aluControl(aluOperationDecodeToExecute),
+        .func3(func3DecodeToExecute),
+        .func7(func7DecodeToExecute),
         .aluControlOut(aluControlOut)
     );
 
     aluInputSelectMux1 aluInputSelectMux1Dut(
-        .registerData(rs1OutReg),
-        .pc(pcOutRegDecode),
-        .input1Select(aluSrc1OutReg),
+        .registerData(rs1DecodeToExecute),
+        .pc(pcOutputDecodeToExecute),
+        .input1Select(aluSrc1DecodeToExecute),
         .input1Alu(input1Alu)
     );
 
     aluInputSelectMux2 aluInputSelectMux2Dut(
-        .registerData(rs2OutRegDecode),
-        .immediateValue(immediateValueOutReg),
-        .input2Select(aluSrc2OutReg),
+        .registerData(rs2DecodeToExecute),
+        .immediateValue(immediateValueDecodeToExecute),
+        .input2Select(aluSrc2DecodeToExecute),
         .input2Alu(input2Alu)
     );
 
@@ -260,19 +261,19 @@ module processor(
     );
 
     pcAdderInputMux pcAdderInputMuxDut(
-        .pc(pcOutRegDecode),
-        .regis(rs1OutReg),
-        .select(pcAdderSrcOutReg),
-        .out(pcAdderOut)
+        .pc(pcOutputDecodeToExecute),
+        .regis(rs1DecodeToExecute),
+        .select(pcAdderSrcDecodeToExecute),
+      	.out(pcAdderInput)
     );
 
     pcAdder pcAdderDut(
-        .pcOrReg(pcAdderOut),
-        .imm(immediateValueOutReg)
+      	.pcOrReg(pcAdderInput),
+      	.imm(immediateValueDecodeToExecute),
         .newPc(newPc)
     );
 
-    /* ----------------------------------------EXECUTE TO MEMORY PIPELINED REGISTER---------------------------------------*/
+    /// EXECUTE TO MEMORY PIPELINED REGISTER
 
     executeToMemoryRegister executeToMemoryRegisterDut(
         .clock(clock),
@@ -280,62 +281,62 @@ module processor(
         .pcAdder(newPc),
         .alu(aluOutput),
         .branch(pcBranch),
-        .pcUpdate(pcUpdateOutRegDecode),
-        .memoryReadEnable(memoryReadEnableOutRegDecode),
-        .memoryWriteEnable(memoryWriteEnableOutRegDecode),
-        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutRegDecode),
-        .rs2(rs2OutRegDecode),
-        .func3(func3OutRegDecode),
-        .pcAdderOut(pcAdderOutReg),
-        .aluOut(aluOutReg),
-        .branchOut(branchOutReg),
-        .pcUpdateOut(pcUpdateOutReg),
-        .memoryReadEnableOut(memoryReadEnableOutReg),
-        .memoryWriteEnableOut(memoryWriteEnableOutReg),
-        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutRegExecute),
-        .rs2Out(rs2OutReg),
-        .func3Out(func3OutReg)
+        .pcUpdate(pcUpdateDecodeToExecute),
+        .memoryReadEnable(memoryReadEnableDecodeToExecute),
+        .memoryWriteEnable(memoryWriteEnableDecodeToExecute),
+        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutDecodeToExecute),
+        .rs2(rs2DecodeToExecute),
+        .func3(func3DecodeToExecute),
+        .pcAdderOut(pcAdderOutExecuteToMemory),
+        .aluOut(aluOutExecuteToMemory),
+        .branchOut(branchOutExecuteToMemory),
+      	.pcUpdateOut(pcUpdateOutExecuteToMemory),
+      	.memoryReadEnableOut(memoryReadEnableOutExecuteToMemory),
+      	.memoryWriteEnableOut(memoryWriteEnableOutExecuteToMemory),
+        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutExecuteToMemory),
+      	.rs2Out(rs2OutExecuteToMemory),
+      	.func3Out(func3OutExecuteToMemory)
     );
 
-    /* ------------------------------------------------MEMORY ACCESS-----------------------------------------------------*/
+    // MEMORY ACCESS
 
     nextPcValueSelect nextPcValueSelectDut(
-        .pcUpadate(pcUpdateOutReg),
-        .branchAlu(branchOutReg),
+      	.pcUpdate(pcUpdateDecodeToExecute),
+        .branchAlu(branchOutExecuteToMemory),
         .pcSelectOut(pcIncrementOrJump)
     );
 
     dataMemory dataMemoryDut(
         .clock(clock),
         .reset(reset),
-        .memoryReadEnable(memoryReadEnableOutReg),
-        .memoryWriteEnable(memoryWriteEnableOutReg),
-        .func3(func3OutReg),
-        .memoryAddress(aluOutReg),
-        .writeData(rs2OutReg)
+      	.memoryReadEnable(memoryReadEnableOutExecuteToMemory),
+      	.memoryWriteEnable(memoryWriteEnableOutExecuteToMemory),
+        .func3(func3OutExecuteToMemory),
+        .memoryAddress(aluOutExecuteToMemory),
+      	.writeData(rs2OutExecuteToMemory),
         .readData(dataMemoryOut)
     );
 
-    /* -------------------------------------MEMORY TO WRITE BACK PIPELINED REGISTER--------------------------------------*/
+    // MEMORY TO WRITE BACK PIPELINED REGISTER
 
     memoryToWriteBackRegister memoryToWriteBackRegisterDut(
         .clock(clock),
         .reset(reset),
-        .writeBackFromAluOrMemory(writeBackFromMemoryOrAluOutRegExecute),
+        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutExecuteToMemory),
         .memoryReadData(dataMemoryOut),
-        .aluData(aluOutReg),
-        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutRegMemory),
-        .memoryReadDataOut(memoryReadDataOutReg),
-        .aluDataOut(aluOutDataReg)
+        .aluData(aluOutExecuteToMemory),
+        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutMemoryToWriteBack),
+        .memoryReadDataOut(memoryReadDataOutMemoryToWriteBack),
+        .aluDataOut(aluOutDataMemoryToWriteBack)
     );
 
-    /* ------------------------------------------------WRITE BACK--------------------------------------------------------*/
+    // WRITE BACK
 
     writeBackMux writeBackMuxDut(
-        .aluData(aluOutDataReg),
-        .memoryData(memoryReadDataOutReg),
-        .writeBackMemoryOrAlu(writeBackFromMemoryOrAluOutRegMemory),
-        .dataBack(writeData)
+        .aluData(aluOutDataMemoryToWriteBack),
+        .memoryData(memoryReadDataOutMemoryToWriteBack),
+        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutMemoryToWriteBack),
+      	.dataBack(registerWriteData)
     );
     
 endmodule
