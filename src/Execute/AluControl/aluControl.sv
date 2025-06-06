@@ -1,4 +1,5 @@
-`include "../../DefaultParameters/defaultParameters.svh";
+`include "../../DefaultParameters/defaultParametersPkg.sv"
+import defaultParametersPkg::*;
 
 module aluControl(
     input logic [2:0]  aluControl,    // ALUCONTROL
@@ -12,32 +13,32 @@ module aluControl(
         case(aluControl)
 
             // LOAD - STORE [I-TYPE AND S-TYPE]
-            typeOfInstructionAluControl.LoadStoreType: begin
+            LoadStoreType: begin
                 aluControlOut = 4'b0000; // ADD - LOAD/STORE
             end
 
             // J-TYPE
-            typeOfInstructionAluControl.JTypeALU: begin
+            JTypeALU: begin
                 aluControlOut = 4'b0000; // ADD - JAL
             end
 
             // I-TYPE_JALR
-            typeOfInstructionAluControl.ITypeJALR_ALU: begin
+            ITypeJALR_ALU: begin
                 aluControlOut = 4'b0000; // ADD - JALR
             end
 
             // U-TYPE
-            typeOfInstructionAluControl.UTypeALU: begin
+            UTypeALU: begin
                 aluControlOut = 4'b0000; // ADD - LUI
             end
 
             // U-TYPE_AUIPC
-            typeOfInstructionAluControl.UTypeAUIPC_ALU: begin
+            UTypeAUIPC_ALU: begin
                 aluControlOut = 4'b0000; // ADD - AUPIC
             end
 
             // B-TYPE
-            typeOfInstructionAluControl.BTypeALU: begin
+            BTypeALU: begin
                 case(func3)
                     3'b000 : aluControlOut = 1010; // BEQ
                     3'b001 : aluControlOut = 1011; // BNE
@@ -50,7 +51,7 @@ module aluControl(
             end
 
             // R-TYPE
-            typeOfInstructionAluControl.RTypeALU: begin
+            RTypeALU: begin
                 case(func3)
                     3'b000: aluControlOut = (func7 == 7'b0100000) ? 4'b0001 : 4'b0000; // SUB/ADD
                     3'b111: aluControlOut = 4'b0010; // AND
@@ -65,7 +66,7 @@ module aluControl(
             end
 
             // I-TYPE
-            typeOfInstructionAluControl.ITypeALU: begin
+            ITypeALU: begin
                 case(func3)
                     3'b000: aluControlOut = 4'b0000; // ADDI
                     3'b111: aluControlOut = 4'b0010; // ANDI

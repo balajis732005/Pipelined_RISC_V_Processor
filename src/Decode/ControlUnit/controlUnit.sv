@@ -1,4 +1,5 @@
-`include "../../DefaultParameters/defaultParameters.svh"
+`include "../../DefaultParameters/defaultParametersPkg.sv"
+import defaultParametersPkg::*;
 
 module controlUnit(
     input  logic [6:0] opcode,                  // OPCODE
@@ -37,7 +38,7 @@ module controlUnit(
         case(opcode)
 
             // R-TYPE
-            instructionType.RType: begin
+            RType: begin
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b00;
                 aluSrc2                = 2'b00;
@@ -45,7 +46,7 @@ module controlUnit(
             end
 
             // I-TYPE
-            instructionType.IType: begin
+            IType: begin
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b00;
                 aluSrc2                = 2'b01;
@@ -53,7 +54,7 @@ module controlUnit(
             end
 
             // I-TYPE_LOAD
-            instructionType.ITypeLoad: begin
+            ITypeLoad: begin
                 memoryReadEnable       = 1'b1;
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b00;
@@ -63,7 +64,7 @@ module controlUnit(
             end
 
             // S-TYPE
-            instructionType.SType: begin
+            SType: begin
                 memoryWriteEnable      = 1'b1;
                 aluSrc1                = 2'b00;
                 aluSrc2                = 2'b01;
@@ -71,7 +72,7 @@ module controlUnit(
             end
 
             // B-TYPE
-            instructionType.BType: begin
+            BType: begin
                 pcUpdate               = 1'b1;
                 aluSrc1                = 2'b00;
                 aluSrc2                = 2'b00;
@@ -80,7 +81,7 @@ module controlUnit(
             end
 
             // J-TYPE
-            instructionType.JType: begin
+            JType: begin
                 pcUpdate               = 1'b1;
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b01;
@@ -90,7 +91,7 @@ module controlUnit(
             end
 
             // I-TYPE_JALR
-            instructionType.ITypeJALR: begin
+            ITypeJALR: begin
                 pcUpdate               = 1'b1;
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b01;
@@ -101,7 +102,7 @@ module controlUnit(
 
 
             // U-TYPE
-            instructionType.UType: begin
+            UType: begin
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b10;
                 aluSrc2                = 2'b01;
@@ -109,7 +110,7 @@ module controlUnit(
             end
 
             // U-TYPE_AUPIC
-            instructionType.UTypeAUIPC: begin
+            UTypeAUIPC: begin
                 registerWriteEnable    = 1'b1;
                 aluSrc1                = 2'b01;
                 aluSrc2                = 2'b01;
