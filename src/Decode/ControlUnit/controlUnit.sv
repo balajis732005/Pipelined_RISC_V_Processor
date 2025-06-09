@@ -21,9 +21,9 @@ module controlUnit(
     ALUOPERATION => Ref defaultParameters.sv
     */
 
-    always_comb begin
+  always_comb begin
         
-        // DEFAULT
+    //DEFULT	
         pcUpdate               = 1'b0;
         memoryReadEnable       = 1'b0;
         memoryWriteEnable      = 1'b0;

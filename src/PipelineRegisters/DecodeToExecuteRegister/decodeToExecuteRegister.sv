@@ -16,6 +16,9 @@ module decodeToExecuteRegister (
     input logic [2:0]   aluOperation,
     input logic         pcAdderSrc,
     input logic         writeBackFromMemoryOrAlu,
+  	input logic [4:0] rd,
+  input logic [4:0] rs1,
+  input logic [4:0] rs2,
     output logic [31:0] pcOut,
     output logic [31:0] readData1Out,
     output logic [31:0] readData2Out,
@@ -30,11 +33,14 @@ module decodeToExecuteRegister (
     output logic [1:0]  aluSrc2Out,
     output logic [2:0]  aluOperationOut,
     output logic        pcAdderSrcOut,
-    output logic        writeBackFromMemoryOrAluOut
+    output logic        writeBackFromMemoryOrAluOut,
+  output logic [4:0] rdOut,
+  output logic [4:0] rs1Out,
+  output logic [4:0] rs2Out
 );
 
     always_ff @(posedge clock) begin
-        if (reset) begin
+      if (reset==1'b1) begin
             pcOut <= 32'b0;
             readData1Out <= 32'b0;
             readData2Out <= 32'b0;
@@ -50,6 +56,9 @@ module decodeToExecuteRegister (
             aluOperationOut <= 2'b0;
             pcAdderSrcOut <= 1'b0;
             writeBackFromMemoryOrAluOut <= 1'b0;
+        rdOut <= 5'b0;
+        rs1Out <= 5'b0;
+        rs2Out <= 5'b0;
         end else begin
             pcOut <= pc;
             readData1Out <= readData1;
@@ -66,6 +75,9 @@ module decodeToExecuteRegister (
             aluOperationOut <= aluOperation;
             pcAdderSrcOut <= pcAdderSrc;
             writeBackFromMemoryOrAluOut <= writeBackFromMemoryOrAlu;
+          rdOut <= rd;
+          rs1Out <= rs1;
+          rs2Out <= rs2;
         end
     end
 

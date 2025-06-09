@@ -1,19 +1,14 @@
-`include "../../Mux4_1/mux4_1.sv"
-
 module aluInputSelectMux2(
-    input logic [31:0]  registerData,   // REGISTER
-    input logic [31:0]  immediateValue, // IMMEDIATE
-    input logic [1:0]   input2Select,    // SELECT LINE 2
-    output logic [31:0] input2Alu      // INPUT 2 TO ALU
+    input logic [31:0]  registerData, 
+    input logic [31:0]  immediateValue,
+    input logic [1:0]   input2Select, 
+    output logic [31:0] input2Alu 
 );
 
-    // MUX 4 x 1
-    mux4_1 muxALUIN2 (
-        .in1(registerData),
-        .in2(immediateValue),
-        .in3(32'b1),
-      	.in4(32'b0),
-        .select(input2Select),
-        .out(input2Alu)
-    );
+  always_comb begin
+  
+    input2Alu <= ((input2Select==2'b00) ? registerData :
+                  ((input2Select==2'b01) ? immediateValue : ((input2Select==2'b10) ? 32'b1 : 32'b0))
+                 );
+  end
 endmodule

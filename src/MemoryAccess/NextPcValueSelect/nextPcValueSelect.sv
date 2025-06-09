@@ -1,9 +1,13 @@
 module nextPcValueSelect(
-    input logic  pcUpdate,   // PC_UPDATE FROM CONTROL UNIT
-    input logic  branchAlu,   // BRANCH FROM ALU
-    output logic pcSelectOut // NEXT PC VALUE SELECTION
+
+    input logic  pcUpdate, 
+    input logic  branchAlu, 
+    output logic pcSelectOut 
 );
 
-    assign pcSelectOut = pcUpdate & branchAlu; // IF BOTH 1 THE PC IS JUMP
+  always_comb begin
+    
+    pcSelectOut = pcUpdate & branchAlu; // IF BOTH 1 THE PC IS JUMP
+  end
 
 endmodule

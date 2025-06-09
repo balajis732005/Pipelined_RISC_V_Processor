@@ -1,9 +1,12 @@
 module pcAdder(
-    input logic [31:0]  pcOrReg,    // CURRENT PC
-    input logic [31:0]  imm,   // IMMEDIATE
-    output logic [31:0] newPc // NEXT PC
+  input logic [31:0]  pcOrReg,
+  input logic [31:0]  imm,
+  output logic [31:0] newPc
 );
 
-    assign newPc = pcOrReg + (imm << 1); // IMMEDIATE LSB MUST = 0
+  always_comb begin
+    newPc = pcOrReg + (imm << 1); // IMMEDIATE LSB MUST = 0
+  end
+
 
 endmodule

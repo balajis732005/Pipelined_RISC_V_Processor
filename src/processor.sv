@@ -71,6 +71,9 @@ module processor(
     logic [2:0]  aluOperationDecodeToExecute;
     logic        pcAdderSrcDecodeToExecute;
     logic        writeBackFromMemoryOrAluOutDecodeToExecute;
+  	logic [4:0]  rdDecodeToExecute;
+  logic [4:0] rs1DecodeToExecute;
+  logic [4:0] rs2DecodeToExecute;
 
     // EXECUTE
     logic [3:0]  aluControlOut;
@@ -80,6 +83,10 @@ module processor(
     logic        pcBranch;
   	logic [31:0] pcAdderInput;
     logic [31:0] newPc;
+  logic [1:0] forwardAluInputSelect1;
+  logic [1:0] forwardAluInputSelect2;
+  logic [31:0] forwardAluInput1;
+  logic [31:0] forwardAluInput2;
 
     // EXECUTE TO MEMORY REGISTER
   	logic [31:0] pcAdderOutExecuteToMemory;
@@ -91,7 +98,9 @@ module processor(
     logic        writeBackFromMemoryOrAluOutExecuteToMemory;
   	logic [31:0] readData2OutExecuteToMemory;
   	logic [2:0]  func3OutExecuteToMemory;
-
+  	logic 	     registerWriteEnableExecuteToMemory;
+  	logic [4:0]  rdExecuteToMemory;
+ 
     // MEMORY ACCESS
   	logic pcIncrementOrJump;
     logic [31:0] dataMemoryOut;
@@ -100,16 +109,24 @@ module processor(
     logic        writeBackFromMemoryOrAluOutMemoryToWriteBack;
     logic [31:0] memoryReadDataOutMemoryToWriteBack;
     logic [31:0] aluOutDataMemoryToWriteBack;
+  	logic 	     registerWriteEnableMemoryToWriteBack;
+  	logic [4:0]  rdMemoryToWriteBack;
   
     // WRITE BACK
   	logic [31:0] registerWriteData;
 
     // FETCH
+  
+  	programCounterIncrementor programCounterIncrementorDut(
+      	.pcCurrent(pcOutput),
+      	.pcNext(pcIncrementOut)
+    );
+
 
     programCounterInputMux programCounterInputMuxDut(
-      .pcIncrement(pcIncrementOut),
-      	.pcJump(),
-        .pcIncrementOrJump(),
+      	.pcIncrement(pcIncrementOut),
+      	.pcJump(pcAdderOutExecuteToMemory),
+        .pcIncrementOrJump(pcIncrementOrJump),
         .pcInput(pcInput)
     );
 
@@ -120,12 +137,9 @@ module processor(
       	.pcOut(pcOutput)
     );
 
-    programCounterIncrementor programCounterIncrementorDut(
-      	.pcCurrent(pcOutput),
-      	.pcNext(pcIncrementOut)
-    );
-
     instructionMemory instructionMemoryDut(
+      	.clock(clock),
+      	.reset(reset),
       	.instructionAddress(pcOutput),
         .instruction(currentInstruction)
     );
@@ -163,17 +177,17 @@ module processor(
         .aluSrc2(aluSrc2),
         .aluOperation(aluOperation),
         .pcAdderSrc(pcAdderSrc),
-      .writeBackFromAluOrMemory(writeBackFromMemoryOrAlu)
+      	.writeBackFromAluOrMemory(writeBackFromMemoryOrAlu)
     );
 
     registerFile registerFileDut(
         .clock(clock),
         .reset(reset),
         .rs1(rs1),
-        .rs2(rs2),
-        .rd(rd),
+      	.rs2(rs2),
+        .rd(rdMemoryToWriteBack),
         .writeData(registerWriteData),
-        .registerWrite(registerWriteEnable),
+        .registerWrite(registerWriteEnableMemoryToWriteBack),
         .readData1(readData1),
         .readData2(readData2)
     );
@@ -203,6 +217,9 @@ module processor(
         .aluOperation(aluOperation),
         .pcAdderSrc(pcAdderSrc),
         .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAlu),
+      	.rd(rd),
+      .rs1(rs1),
+      .rs2(rs2),
         .pcOut(pcOutputDecodeToExecute),
       	.readData1Out(readData1DecodeToExecute),
         .readData2Out(readData2DecodeToExecute),
@@ -217,10 +234,40 @@ module processor(
         .aluSrc2Out(aluSrc2DecodeToExecute),
         .aluOperationOut(aluOperationDecodeToExecute),
         .pcAdderSrcOut(pcAdderSrcDecodeToExecute),
-        .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutDecodeToExecute)
+      .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutDecodeToExecute),
+      .rdOut(rdDecodeToExecute),
+      .rs1Out(rs1DecodeToExecute),
+      .rs2Out(rs2DecodeToExecute)
     );
 
     // EXECUTE
+  	
+  forwardUnit forwardUnitDut(
+    .registerWriteEnableExecuteToMemory(registerWriteEnableExecuteToMemory),
+    .registerWriteEnableMemoryToWriteBack(registerWriteEnableMemoryToWriteBack),
+    .prevRdExecuteToMemory(rdExecuteToMemory),
+    .prevRdMemoryToWriteBack(rdMemoryToWriteBack),
+    .presentRs1(rs1DecodeToExecute),
+    .presentRs2(rs2DecodeToExecute),
+    .forwardSelect1(forwardAluInputSelect1),
+    .forwardSelect2(forwardAluInputSelect2)
+  );
+  
+  forwardMux1 forwardMux1Dut(
+    .readData1(readData1DecodeToExecute),
+    .prevDataExecuteToMemory(aluOutExecuteToMemory),
+    .prevDataMemoryToWriteBack(aluOutDataMemoryToWriteBack),
+    .forwardSelect1(forwardAluInputSelect1),
+    .aluForwardInput1(forwardAluInput1)
+  );
+  
+  forwardMux2 forwardMux2Dut(
+    .readData2(readData2DecodeToExecute),
+    .prevDataExecuteToMemory(aluOutExecuteToMemory),
+    .prevDataMemoryToWriteBack(aluOutDataMemoryToWriteBack),
+    .forwardSelect2(forwardAluInputSelect2),
+    .aluForwardInput2(forwardAluInput2)
+  );
 
     aluControl aluControlDut(
         .aluControl(aluOperationDecodeToExecute),
@@ -230,14 +277,14 @@ module processor(
     );
 
     aluInputSelectMux1 aluInputSelectMux1Dut(
-      .registerData(readData1DecodeToExecute),
+      	.registerData(forwardAluInput1),
         .pc(pcOutputDecodeToExecute),
         .input1Select(aluSrc1DecodeToExecute),
         .input1Alu(input1Alu)
     );
 
     aluInputSelectMux2 aluInputSelectMux2Dut(
-      .registerData(readData2DecodeToExecute),
+      .registerData(forwardAluInput2),
         .immediateValue(immediateValueDecodeToExecute),
         .input2Select(aluSrc2DecodeToExecute),
         .input2Alu(input2Alu)
@@ -247,6 +294,7 @@ module processor(
         .in1(input1Alu),
         .in2(input2Alu),
         .aluOperation(aluControlOut),
+      .aluControl(aluOperationDecodeToExecute),
         .aluOutput(aluOutput),
         .branch(pcBranch)
     );
@@ -276,8 +324,10 @@ module processor(
         .memoryReadEnable(memoryReadEnableDecodeToExecute),
         .memoryWriteEnable(memoryWriteEnableDecodeToExecute),
         .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutDecodeToExecute),
-      	.readData2(readData2DecodeToExecute),
+      	.readData2(forwardAluInput2),
         .func3(func3DecodeToExecute),
+      .registerWriteEnable(registerWriteEnableDecodeToExecute),
+      .rd(rdDecodeToExecute),
         .pcAdderOut(pcAdderOutExecuteToMemory),
         .aluOut(aluOutExecuteToMemory),
         .branchOut(branchOutExecuteToMemory),
@@ -286,13 +336,15 @@ module processor(
       	.memoryWriteEnableOut(memoryWriteEnableOutExecuteToMemory),
         .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutExecuteToMemory),
       	.readData2Out(readData2OutExecuteToMemory),
-      	.func3Out(func3OutExecuteToMemory)
+      .func3Out(func3OutExecuteToMemory),
+      .registerWriteEnableOut(registerWriteEnableExecuteToMemory),
+      .rdOut(rdExecuteToMemory)
     );
 
     // MEMORY ACCESS
 
     nextPcValueSelect nextPcValueSelectDut(
-      	.pcUpdate(pcUpdateDecodeToExecute),
+      	.pcUpdate(pcUpdateOutExecuteToMemory),
         .branchAlu(branchOutExecuteToMemory),
         .pcSelectOut(pcIncrementOrJump)
     );
@@ -315,10 +367,14 @@ module processor(
         .reset(reset),
         .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutExecuteToMemory),
         .memoryReadData(dataMemoryOut),
-        .aluData(aluOutExecuteToMemory),
+      .aluData(aluOutExecuteToMemory),
+      .registerWriteEnable(registerWriteEnableExecuteToMemory),
+      .rd(rdExecuteToMemory),
         .writeBackFromMemoryOrAluOut(writeBackFromMemoryOrAluOutMemoryToWriteBack),
         .memoryReadDataOut(memoryReadDataOutMemoryToWriteBack),
-        .aluDataOut(aluOutDataMemoryToWriteBack)
+      .aluDataOut(aluOutDataMemoryToWriteBack),
+      .registerWriteEnableOut(registerWriteEnableMemoryToWriteBack),
+      .rdOut(rdMemoryToWriteBack)
     );
 
     // WRITE BACK
@@ -326,7 +382,7 @@ module processor(
     writeBackMux writeBackMuxDut(
         .aluData(aluOutDataMemoryToWriteBack),
         .memoryData(memoryReadDataOutMemoryToWriteBack),
-        .writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutMemoryToWriteBack),
+        		.writeBackFromMemoryOrAlu(writeBackFromMemoryOrAluOutMemoryToWriteBack),
       	.dataBack(registerWriteData)
     );
     

@@ -10,6 +10,8 @@ module executeToMemoryRegister(
     input logic         writeBackFromMemoryOrAlu,
   	input logic [31:0]  readData2,
     input logic [2:0]   func3,
+  	input logic 		registerWriteEnable,
+  	input logic [4:0] 	rd,
     output logic [31:0] pcAdderOut,
     output logic [31:0] aluOut,
     output logic        branchOut,
@@ -18,14 +20,16 @@ module executeToMemoryRegister(
     output logic        memoryWriteEnableOut,
     output logic        writeBackFromMemoryOrAluOut,
   	output logic [31:0] readData2Out,
-    output logic [2:0]  func3Out
+  output logic [2:0]  func3Out,
+  output logic 		registerWriteEnableOut,
+  output logic [4:0] rdOut
 );
 
     always_ff @(posedge clock) begin
 
-        if(reset) begin
+      if(reset==1'b1) begin
             pcAdderOut <= 32'b0;
-            aluOut <= 31'b0;
+            aluOut <= 32'b0;
             branchOut <= 1'b0;
             pcUpdateOut <= 1'b0;
             memoryReadEnableOut <= 1'b0;
@@ -33,10 +37,12 @@ module executeToMemoryRegister(
             writeBackFromMemoryOrAluOut <= 1'b0;
             readData2Out <= 32'b0;
             func3Out <= 3'b0;
+        	registerWriteEnableOut <= 1'b0;
+        rdOut <= 5'b0;
         end
         else begin
             pcAdderOut <= pcAdder;
-            aluOut <= aluOut;
+            aluOut <= alu;
             branchOut <= branch;
             pcUpdateOut <= pcUpdate;
             memoryReadEnableOut <= memoryReadEnable;
@@ -44,6 +50,8 @@ module executeToMemoryRegister(
             writeBackFromMemoryOrAluOut <= writeBackFromMemoryOrAlu;
             readData2Out <= readData2;
             func3Out <= func3;
+          	registerWriteEnableOut <= registerWriteEnable;
+          rdOut <= rd;
         end
     end
 

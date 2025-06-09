@@ -1,12 +1,12 @@
 module dataMemory(
-    input  logic         clock,             // CLOCK 
-    input  logic         reset,             // RESET
-    input  logic         memoryReadEnable,  // REQUIRE TO READ IN MEMORY
-    input  logic         memoryWriteEnable, // REQUIRE TO WRITE IN MEMORY
-    input  logic [2:0]   func3,             // FUNC3 OPERATION
-    input  logic [31:0]  memoryAddress,     // ADDRESS TO WRITE OR READ
-    input  logic [31:0]  writeData,         // DATA TO BE WRITE
-    output logic [31:0]  readData           // READ DATA FROM MEMORY
+    input  logic         clock, 
+    input  logic         reset, 
+    input  logic         memoryReadEnable, 
+    input  logic         memoryWriteEnable, 
+    input  logic [2:0]   func3,
+    input  logic [31:0]  memoryAddress, 
+    input  logic [31:0]  writeData, 
+    output logic [31:0]  readData 
 );
 
     // 1KB x 32-bit MEMORY
@@ -45,6 +45,7 @@ module dataMemory(
                 default: modifiedWriteData = writeData;                  // SW
             endcase
             dataMem[memoryAddress[11:2]] <= modifiedWriteData;
+          $display($time," [DATAMEM] WRITE[%0d] : %0d",memoryAddress,modifiedWriteData);
         end
     end
 

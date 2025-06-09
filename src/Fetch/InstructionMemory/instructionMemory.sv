@@ -1,15 +1,24 @@
 module instructionMemory (
-    input  logic [31:0] instructionAddress, // PC VALUE OR CUURENT INSTRUCTION ADDRESS
-    output logic [31:0] instruction         // INSTRUCTION OUT
+  input logic clock,
+  input logic reset,
+    input  logic [31:0] instructionAddress,
+    output logic [31:0] instruction 
 );
 
-    //INSTRUCTION MEMORY 32 x 1Kb
     logic [31:0] instMem [0:1023];
 
     initial begin
         $readmemb("../../Instructions/instructions.mem",instMem);
     end
-
-    assign instruction = instMem[instructionAddress[9:0]]; // 1024 = 2^10 -> SO ADDRESS LENGTH = 10
+  
+  always_ff @(posedge clock) begin
+    if(reset==1'b1) begin
+      instruction <= 32'bx;
+    end
+    
+    else begin
+    	instruction <= instMem[instructionAddress[9:0]];
+    end
+  end
 
 endmodule

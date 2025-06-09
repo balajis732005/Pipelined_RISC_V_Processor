@@ -2,13 +2,13 @@
 import defaultParametersPkg::*;
 
 module aluControl(
-    input logic [2:0]  aluControl,    // ALUCONTROL
-    input logic [2:0]  func3,         // FUNC3 OPERATION
-    input logic [6:0]  func7,         // FUNC7 OPERATION
-    output logic [3:0] aluControlOut // ALU TO WORK OPEARTION
+    input logic [2:0]  aluControl, 
+    input logic [2:0]  func3, 
+    input logic [6:0]  func7, 
+    output logic [3:0] aluControlOut 
 );
 
-    always_comb begin
+  always_comb begin
 
         case(aluControl)
 
@@ -40,12 +40,12 @@ module aluControl(
             // B-TYPE
             BTypeALU: begin
                 case(func3)
-                    3'b000 : aluControlOut = 1010; // BEQ
-                    3'b001 : aluControlOut = 1011; // BNE
-                    3'b100 : aluControlOut = 1100; // BLT
-                    3'b101 : aluControlOut = 1101; // BGE
-                    3'b110 : aluControlOut = 1110; // BLTU
-                    3'b111 : aluControlOut = 1111; // BGEU
+                    3'b000 : aluControlOut = 4'b1010; // BEQ
+                    3'b001 : aluControlOut = 4'b1011; // BNE
+                    3'b100 : aluControlOut = 4'b1100; // BLT
+                    3'b101 : aluControlOut = 4'b1101; // BGE
+                    3'b110 : aluControlOut = 4'b1110; // BLTU
+                    3'b111 : aluControlOut = 4'b1111; // BGEU
                     default : aluControlOut = 4'bx;
                 endcase
             end
@@ -55,6 +55,7 @@ module aluControl(
                 case(func3)
                     3'b000: aluControlOut = (func7 == 7'b0100000) ? 4'b0001 : 4'b0000; // SUB/ADD
                     3'b111: aluControlOut = 4'b0010; // AND
+            
                     3'b110: aluControlOut = 4'b0011; // OR
                     3'b100: aluControlOut = 4'b0100; // XOR
                     3'b001: aluControlOut = 4'b0101; // SLL
@@ -84,6 +85,7 @@ module aluControl(
                 aluControlOut = 4'bxxxx;
             end
         endcase
+    
     end
 
 endmodule
