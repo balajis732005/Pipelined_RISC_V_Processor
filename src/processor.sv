@@ -19,6 +19,9 @@
 `include "MemoryAccess\DataMemory\dataMemory.sv" 
 `include "PipelineRegisters\MemoryToWriteBackRegister\memoryToWriteBackRegister.sv"
 `include "WriteBack\WriteBackMux\writeBackMux.sv"
+`include "Execute\ForwardUnit\forwardUnit.sv"
+`include "Execute\ForwardMux1\forwardMux1.sv"
+`include "Execute\ForwardMux2\forwardMux2.sv"
 
 module processor(
     input logic clock,
