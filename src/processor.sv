@@ -28,13 +28,13 @@ module processor(
     input logic reset
 );
 
-    // FETCH
-  	logic [31:0] pcIncrementOut;
-    logic [31:0] pcInput;
-  	logic [31:0] pcOutput;
-    logic [31:0] currentInstruction;
+  // FETCH
+  logic [31:0] pcIncrementOut;
+  logic [31:0] pcInput;
+  logic [31:0] pcOutput;
+  logic [31:0] currentInstruction;
 
-    // FETCH TO DECODE REGISTER
+  // FETCH TO DECODE REGISTER
   	logic [31:0] pcOutputFetchToDecode;
   	logic [31:0] currentInstructionFetchToDecode;
 
